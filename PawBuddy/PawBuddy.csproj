@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>aspnet-PawBuddy-0e2c2a34-eeac-4eaa-a972-03d2ae7740ef</UserSecretsId>
     </PropertyGroup>
@@ -16,7 +16,9 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.13"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.13"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.14" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.13"/>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     </ItemGroup>
 
 </Project>

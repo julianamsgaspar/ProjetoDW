@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PawBuddy.Data;
 
@@ -10,9 +11,11 @@ using PawBuddy.Data;
 namespace PawBuddy.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250319113633_novacomcd")]
+    partial class novacomcd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.14");
@@ -213,24 +216,6 @@ namespace PawBuddy.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PawBuddy.Models.Adotam", b =>
-                {
-                    b.Property<int>("AnimalFK")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UtilizadorFK")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("dateA")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("AnimalFK");
-
-                    b.HasIndex("UtilizadorFK");
-
-                    b.ToTable("Adotam");
-                });
-
             modelBuilder.Entity("PawBuddy.Models.Animal", b =>
                 {
                     b.Property<int>("Id")
@@ -238,24 +223,31 @@ namespace PawBuddy.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Cor")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Especie")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Genero")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Idade")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Imagem")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Nome")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Raca")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -293,6 +285,7 @@ namespace PawBuddy.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Contacto")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataIA")
@@ -305,12 +298,15 @@ namespace PawBuddy.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Motivo")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Profissao")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Residencia")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("UtilizadorFK", "AnimalFK");
@@ -408,25 +404,6 @@ namespace PawBuddy.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("PawBuddy.Models.Adotam", b =>
-                {
-                    b.HasOne("PawBuddy.Models.Animal", "Animal")
-                        .WithMany()
-                        .HasForeignKey("AnimalFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PawBuddy.Models.Utilizador", "Utilizador")
-                        .WithMany()
-                        .HasForeignKey("UtilizadorFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Animal");
-
-                    b.Navigation("Utilizador");
                 });
 
             modelBuilder.Entity("PawBuddy.Models.Doa", b =>
