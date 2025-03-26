@@ -15,5 +15,7 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Utilizador> Utilizador { get; set; }
     public DbSet<Doa> Doa { get; set; }
     public DbSet<IntencaoDeAdocao> Intencao { get; set; }
+    public DbSet<Adotam> Adotam { get; set; }
+    
     
 }

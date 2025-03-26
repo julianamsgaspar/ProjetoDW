@@ -8,7 +8,7 @@ namespace PawBuddy.Models;
 /// Class associada as adoçoes definitivas 
 /// </summary>
 [PrimaryKey(nameof(AnimalFK))]
-public class adotam
+public class Adotam
 {
     /// <summary>
     /// data da adoção definitiva
