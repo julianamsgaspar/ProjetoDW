@@ -26,16 +26,6 @@
                 </select>
             </div>
             <div class="form-group">
-                <label asp-for="Idade" class="control-label"></label>
-                <input asp-for="Idade" class="form-control" />
-                <span asp-validation-for="Idade" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Contacto" class="control-label"></label>
-                <input asp-for="Contacto" class="form-control" />
-                <span asp-validation-for="Contacto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Profissao" class="control-label"></label>
                 <input asp-for="Profissao" class="form-control" />
                 <span asp-validation-for="Profissao" class="text-danger"></span>
@@ -49,6 +39,19 @@
                 <label asp-for="Motivo" class="control-label"></label>
                 <input asp-for="Motivo" class="form-control" />
                 <span asp-validation-for="Motivo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="temAnimais" class="control-label"></label>
+                <input asp-for="temAnimais" class="form-control" />
+                <span asp-validation-for="temAnimais" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="quaisAnimais" class="control-label"></label>
+                <select asp-for="temAnimais" class="form-control">
+                    <option value=""> Sim </option>
+                    <option value=""> Não </option>
+                </select>
+                <span asp-validation-for="quaisAnimais" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="UtilizadorFK" class="control-label"></label>

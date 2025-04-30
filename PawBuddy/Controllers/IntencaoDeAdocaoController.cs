@@ -64,7 +64,7 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Estado,Idade,Contacto,Profissao,Residencia,Motivo,DataIA,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao, List<int> animaisAAdotar)
+        public async Task<IActionResult> Create([Bind("Id,Estado,temAnimais, quaisAnimais,Profissao,Residencia,Motivo,DataIA,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao, List<int> animaisAAdotar)
         {
             // Forçar o estado para "Reservado"
             intencaoDeAdocao.Estado = EstadoAdocao.Reservado;
@@ -113,7 +113,7 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Estado,Idade,Contacto,Profissao,Residencia,Motivo,DataIA,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Estado,temAnimais, temAnimais,Profissao,Residencia,Motivo,DataIA,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
         {
             if (id != intencaoDeAdocao.Id)
             {

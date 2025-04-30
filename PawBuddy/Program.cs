@@ -31,6 +31,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    //app.UseItSeedSqlServer();
 }
 else
 {

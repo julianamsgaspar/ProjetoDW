@@ -57,7 +57,7 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
+        public async Task<IActionResult> Create([Bind("Id,Nome, Idade,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
         {
             if (ModelState.IsValid)
             {
@@ -94,7 +94,7 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([FromRoute]int id, [Bind("Id,Nome,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
+        public async Task<IActionResult> Edit([FromRoute]int id, [Bind("Id,Idade, Nome,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
         {
             if (id != utilizador.Id)
             {

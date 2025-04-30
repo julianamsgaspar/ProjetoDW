@@ -19,7 +19,15 @@ public class Utilizador
     [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
     [StringLength(50)] 
     public string Nome { get; set; }
-
+    
+    /// <summary>
+    /// idade do utilizador
+    /// </summary>
+    [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
+    [Display(Name = "Data de Nascimento")]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
+    public DateTime Idade  { get; set; }
+    
     /// <summary>
     /// numero de identificação fiscal
     /// </summary>

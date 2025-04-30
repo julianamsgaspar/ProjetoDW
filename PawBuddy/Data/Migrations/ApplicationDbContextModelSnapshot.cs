@@ -313,18 +313,10 @@ namespace PawBuddy.Data.Migrations
                     b.Property<int>("AnimalFK")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Contacto")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("DataIA")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Estado")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Idade")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Motivo")
@@ -344,6 +336,15 @@ namespace PawBuddy.Data.Migrations
 
                     b.Property<int>("UtilizadorFK")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("quaisAnimais")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("temAnimais")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -368,6 +369,9 @@ namespace PawBuddy.Data.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Idade")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Morada")

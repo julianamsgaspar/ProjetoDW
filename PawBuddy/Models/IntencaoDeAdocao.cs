@@ -24,26 +24,12 @@ public class IntencaoDeAdocao
      * formulario
      * **************************
      */
-    /// <summary>
-    /// idade do utilizador
-    /// </summary>
-    [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
-    public int Idade  { get; set; }
     
-    /// <summary>
-    /// numero de telemovel
-    /// </summary>
-    ///
-    [Display(Name = "Telemóvel")]
-    [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
-    [RegularExpression("([+]|00)?[0-9]{6,17}", ErrorMessage = "O {0} só pode conter digitos. No mínimo 6.")]
-    [StringLength(50)] 
-    public string Contacto { get; set; }
     
     /// <summary>
     /// profissão do utilizador
     /// </summary>
-    [Display(Name = "Profissão")]
+    [Display(Name = "Ocupação/Profissão")]
     [StringLength(50)] 
     [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")]
     public string Profissao { get; set; }
@@ -63,6 +49,24 @@ public class IntencaoDeAdocao
     [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")] 
     [StringLength(50)] 
     public string Motivo  { get; set; }
+    
+    /// <summary>
+    /// Pergunta se tem outros animais
+    /// </summary>
+    ///
+    [Display(Name = "Tem animais em casa?")]
+    [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
+    [RegularExpression("^(Sim|Não)$", ErrorMessage = "O valor de {0} deve ser 'Sim' ou 'Não'.")]
+    [StringLength(50)] 
+    public string temAnimais { get; set; }
+    
+    /// <summary>
+    /// se tiver animais, quais?
+    /// </summary>
+    ///
+    [Display(Name = "Se sim, quais?")]
+    [StringLength(50)] 
+    public string quaisAnimais { get; set; }
     
     /// <summary>
     /// data da submissao do formulario
