@@ -1,0 +1,73 @@
+@model PawBuddy.Models.IntencaoDeAdocao
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Editar</h1>
+
+<h4>Formulario de adoção</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Estado" class="control-label"></label>
+                <select asp-for="Estado" class="form-control">
+                @{
+                    <option value="@EstadoAdocao.Reservado">Reservado</option>
+                    <option value="@EstadoAdocao.Emvalidacao">Em validação</option>
+                    <option value="@EstadoAdocao.Emprocesso">Em Processo</option>
+                    <option value="@EstadoAdocao.Concluido">Concluído</option>
+                    <option value="@EstadoAdocao.Rejeitado">Rejeitado </option>
+                }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Idade" class="control-label"></label>
+                <input asp-for="Idade" class="form-control" />
+                <span asp-validation-for="Idade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Contacto" class="control-label"></label>
+                <input asp-for="Contacto" class="form-control" />
+                <span asp-validation-for="Contacto" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Profissao" class="control-label"></label>
+                <input asp-for="Profissao" class="form-control" />
+                <span asp-validation-for="Profissao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Residencia" class="control-label"></label>
+                <input asp-for="Residencia" class="form-control" />
+                <span asp-validation-for="Residencia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Motivo" class="control-label"></label>
+                <input asp-for="Motivo" class="form-control" />
+                <span asp-validation-for="Motivo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UtilizadorFK" class="control-label"></label>
+                <select asp-for="UtilizadorFK" class="form-control" asp-items="ViewBag.UtilizadorFK"></select>
+                <span asp-validation-for="UtilizadorFK" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnimalFK" class="control-label"></label>
+                <select asp-for="AnimalFK" class="form-control" asp-items="ViewBag.AnimalFK"></select>
+                <span asp-validation-for="AnimalFK" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar</a>
+</div>
+

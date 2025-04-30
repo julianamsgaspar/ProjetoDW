@@ -1,0 +1,99 @@
+@model IEnumerable<PawBuddy.Models.IntencaoDeAdocao>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Página Inicial</h1>
+
+<p>
+    <a asp-action="Create">Criar</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Estado)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Idade)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Contacto)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Profissao)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Residencia)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Motivo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DataIA)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Utilizador)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Animal)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Idade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contacto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Profissao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Residencia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Motivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataIA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Utilizador.CodPostal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Animal.Cor)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+
+<h4>Exemplo</h4>
+
+@foreach (var item in Model)
+{
+    <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@item.Estado</h5>
+            <p class="card-text">@item.Motivo.</p>
+            <a href="?animal=@item.Id" class="btn btn-primary">@item.Residencia</a>
+        </div>
+    </div>
+}

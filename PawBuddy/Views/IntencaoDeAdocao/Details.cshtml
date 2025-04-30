@@ -1,0 +1,72 @@
+@model PawBuddy.Models.IntencaoDeAdocao
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Detalhes</h1>
+
+<div>
+    <h4>Intenção de Adotar</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Estado)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Estado)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Idade)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Idade)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Contacto)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Contacto)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Profissao)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Profissao)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Residencia)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Residencia)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Motivo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Motivo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DataIA)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DataIA)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Utilizador)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Utilizador.CodPostal)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Animal)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Animal.Cor)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
+    <a asp-action="Index">Voltar</a>
+</div>

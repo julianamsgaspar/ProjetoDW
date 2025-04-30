@@ -1,0 +1,41 @@
+@model PawBuddy.Models.Adotam
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Editar</h1>
+
+<h4>Adotam</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="dateA" class="control-label"></label>
+                <input asp-for="dateA" class="form-control" />
+                <span asp-validation-for="dateA" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UtilizadorFK" class="control-label"></label>
+                <select asp-for="UtilizadorFK" class="form-control" asp-items="ViewBag.UtilizadorFK"></select>
+                <span asp-validation-for="UtilizadorFK" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="AnimalFK" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar</a>
+</div>
+
