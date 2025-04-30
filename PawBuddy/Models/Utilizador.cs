@@ -73,9 +73,11 @@ public class Utilizador
     /// pais de origem do utilizador
     /// </summary>
     [Display(Name = "Nacionalidade")]
-    [StringLength(50)] 
     [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")] 
     public string Pais { get; set; }
+    [StringLength(50)] 
+    public string? IdentityUserName { get; set; }
+    
     
     /* *************************
      * Definção dos relacionamentos

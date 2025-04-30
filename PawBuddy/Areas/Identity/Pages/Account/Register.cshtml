@@ -1,0 +1,83 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Criar uma nova conta</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Utilizador.Nome" class="form-control" aria-required="true" />
+                <label asp-for="Input.Utilizador">Nome</label>
+                <span asp-validation-for="Input.Utilizador.Nome" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 col-md-offset-2">
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Utilizador.Nif" class="form-control" aria-required="true"/>
+                    <label asp-for="Input.Utilizador.Nif">NIF</label>
+                    <span asp-validation-for="Input.Utilizador.Nif" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Utilizador.Telemovel" class="form-control" aria-required="true"/>
+                    <label asp-for="Input.Utilizador.Telemovel">Telemóvel</label>
+                    <span asp-validation-for="Input.Utilizador.Telemovel" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Utilizador.Morada" class="form-control" aria-required="true"/>
+                    <label asp-for="Input.Utilizador.Morada">Morada</label>
+                    <span asp-validation-for="Input.Utilizador.Morada" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Utilizador.CodPostal" class="form-control" aria-required="true" placeholder="XXXX-XXX"/>
+                    <label asp-for="Input.Utilizador.CodPostal">Código Postal</label>
+                    <span asp-validation-for="Input.Utilizador.CodPostal" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Utilizador.Pais" class="form-control" aria-required="true"/>
+                    <label asp-for="Input.Utilizador.Pais">País</label>
+                    <span asp-validation-for="Input.Utilizador.Pais" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div> <!-- Fecho do div.row -->
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

@@ -13,7 +13,8 @@ namespace PawBuddy.Controllers
     public class AdotamController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        
+        //construtor
         public AdotamController(ApplicationDbContext context)
         {
             _context = context;

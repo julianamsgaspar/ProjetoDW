@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PawBuddy.Data;
 
@@ -10,9 +11,11 @@ using PawBuddy.Data;
 namespace PawBuddy.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250430110911_alteracoesregisterlogin")]
+    partial class alteracoesregisterlogin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.14");
@@ -313,10 +316,18 @@ namespace PawBuddy.Data.Migrations
                     b.Property<int>("AnimalFK")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Contacto")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DataIA")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Estado")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Idade")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Motivo")
@@ -336,15 +347,6 @@ namespace PawBuddy.Data.Migrations
 
                     b.Property<int>("UtilizadorFK")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("quaisAnimais")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("temAnimais")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -369,9 +371,6 @@ namespace PawBuddy.Data.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Idade")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("IdentityUserName")
