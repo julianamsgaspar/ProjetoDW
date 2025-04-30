@@ -17,5 +17,5 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<IntencaoDeAdocao> Intencao { get; set; }
     public DbSet<Adotam> Adotam { get; set; }
     
-    
+    //adicionar metodo da seed
 }
