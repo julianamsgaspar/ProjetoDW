@@ -23,31 +23,35 @@ public class Animal
 	/// </summary>
     [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
 	[RegularExpression("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$", ErrorMessage = "A {0} não pode conter caracteres numéricos.")]
-	
+    [StringLength(50)] 
     public string Raca {get; set; }
 
 	/// <summary>
 	/// idade do animal
 	/// </summary>
 	[Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
+	[StringLength(50)] 
 	public string Idade { get; set; }
 
 	/// <summary>
 	/// genero do animal
 	/// </summary>
 	[Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
+	[StringLength(50)] 
     public string Genero {get; set; }
 
 	/// <summary>
 	/// especie do animal (gato, cão, etc)
 	/// </summary>
 	[Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
+	[StringLength(50)] 
     public string Especie { get; set; }
 
 	/// <summary>
 	/// cor do animal
 	/// </summary>
 	[Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
+	[StringLength(50)] 
     public string Cor { get; set; }
 
 	/// <summary>

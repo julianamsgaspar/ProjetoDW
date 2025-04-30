@@ -37,12 +37,14 @@ public class IntencaoDeAdocao
     [Display(Name = "Telemóvel")]
     [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
     [RegularExpression("([+]|00)?[0-9]{6,17}", ErrorMessage = "O {0} só pode conter digitos. No mínimo 6.")]
+    [StringLength(50)] 
     public string Contacto { get; set; }
     
     /// <summary>
     /// profissão do utilizador
     /// </summary>
     [Display(Name = "Profissão")]
+    [StringLength(50)] 
     [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")]
     public string Profissao { get; set; }
     
@@ -51,6 +53,7 @@ public class IntencaoDeAdocao
     /// </summary>
     [Display(Name = "Tipo de Residência")]
     [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
+    [StringLength(50)] 
     public string Residencia { get; set; }
     
     /// <summary>
@@ -58,7 +61,9 @@ public class IntencaoDeAdocao
     /// </summary>
     [Display(Name = "Motivo da Adoção")]
     [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")] 
+    [StringLength(50)] 
     public string Motivo  { get; set; }
+    
     /// <summary>
     /// data da submissao do formulario
     /// </summary>
