@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,9 +6,14 @@ namespace PawBuddy.Models;
 /// <summary>
 /// class que diz a intenção dos utilizadores em adotar os animais, depois é validado pelo administrador 
 /// </summary>
-[PrimaryKey(nameof(UtilizadorFK),nameof(AnimalFK))]
+//[PrimaryKey(nameof(UtilizadorFK),nameof(AnimalFK))]
 public class IntencaoDeAdocao
 {
+    /// <summary>
+    /// idendificação da intenção de adoção
+    /// </summary>
+    public int Id { get; set; }
+    
     /// <summary>
     /// Estado da adoção -- enumeração abaixo
     /// </summary>
@@ -21,26 +27,44 @@ public class IntencaoDeAdocao
     /// <summary>
     /// idade do utilizador
     /// </summary>
+    [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
     public int Idade  { get; set; }
+    
     /// <summary>
     /// numero de telemovel
     /// </summary>
+    ///
+    [Display(Name = "Telemóvel")]
+    [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
+    [RegularExpression("([+]|00)?[0-9]{6,17}", ErrorMessage = "O {0} só pode conter digitos. No mínimo 6.")]
     public string Contacto { get; set; }
+    
     /// <summary>
     /// profissão do utilizador
     /// </summary>
+    [Display(Name = "Profissão")]
+    [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")]
     public string Profissao { get; set; }
+    
     /// <summary>
     /// que tipo de residencia onde o utilizador vive
     /// </summary>
+    [Display(Name = "Tipo de Residência")]
+    [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
     public string Residencia { get; set; }
+    
     /// <summary>
     /// motivo da adoção
     /// </summary>
+    [Display(Name = "Motivo da Adoção")]
+    [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")] 
     public string Motivo  { get; set; }
     /// <summary>
     /// data da submissao do formulario
     /// </summary>
+    [Display(Name = "Data da Adoção")]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
+    [DataType(DataType.Date)] 
     public DateTime DataIA  { get; set; }
     
     

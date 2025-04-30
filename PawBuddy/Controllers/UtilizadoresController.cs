@@ -113,7 +113,7 @@ namespace PawBuddy.Controllers
                     // quer dizer que está a tentar alterar um utilizador diferente do que tem no ecrã
                     if (utilizadorDaSessao != id)
                     {
-                        ModelState.AddModelError("", "Não podes fazer isso");
+                        ModelState.AddModelError("", "Erro: Não tens permissão");
                         return View(utilizador);
                     }
                     _context.Update(utilizador);

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using PawBuddy.Models;
@@ -11,8 +12,16 @@ namespace PawBuddy.Models;
 public class Adotam
 {
     /// <summary>
+    /// idendificação da adoção
+    /// </summary>
+    public int Id { get; set; }
+    
+    /// <summary>
     /// data da adoção definitiva
     /// </summary>
+    [Display(Name = "Data da Doação")]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
+    [DataType(DataType.Date)] 
     public DateTime dateA { get; set; }
     
     /* *************************
@@ -23,6 +32,7 @@ public class Adotam
     /// <summary>
     /// FK para referenciar o utilizador que adota definitivamente um animal
     /// </summary>
+    [Display(Name = "Utilizador")]
     [ForeignKey(nameof(Utilizador))]
     public int UtilizadorFK { get; set; }
     public Utilizador Utilizador { get; set; }
@@ -30,6 +40,7 @@ public class Adotam
     /// <summary>
     /// FK para referenciar o animal que foi adotado 
     /// </summary>
+    [Display(Name = "Animal")]
     [ForeignKey(nameof(Animal))]
     public int AnimalFK { get; set; }
     public Animal Animal { get; set; }

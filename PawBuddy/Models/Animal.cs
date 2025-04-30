@@ -67,7 +67,7 @@ public class Animal
 	/// Lista de animais que o utilizador tem intenção de adotar 
 	/// </summary>
    
-	public ICollection<IntencaoDeAdocao>? IntencasDeAdocao { get; set; } // pode ser null
+	public ICollection<IntencaoDeAdocao>? IntencaoDeAdocao { get; set; } // pode ser null
     
 	/// <summary>
 	/// Lista de doações que o utilizador ja fez aos animais

@@ -10,6 +10,7 @@ public class Utilizador
     /// <summary>
     /// Identificação único do utilizador
     /// </summary>
+    [Key]
     public int Id { get; set; }
 
     /// <summary>
@@ -39,6 +40,7 @@ public class Utilizador
     /// </summary>
     [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")] 
     public string Morada { get; set; }
+    
     /// <summary>
     /// Código Postal da  morada do utilizador
     /// </summary>
@@ -67,7 +69,7 @@ public class Utilizador
     /// <summary>
     /// Lista de animais que o utilizador tem intenção de adotar 
     /// </summary>
-    public ICollection<IntencaoDeAdocao> IntencasDeAdocais { get; set; } = [];
+    public ICollection<IntencaoDeAdocao> IntencaoDeAdocao { get; set; } = [];
     
     /// <summary>
     /// Lista de doações que o utilizador ja fez aos animais
