@@ -53,7 +53,7 @@ public class Animal
 	/// <summary>
 	/// imagem associada ao animal
 	/// </summary>
-	[Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
+	// [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
 	[RegularExpression("^(.+/)?([^/]+\\.(jpg|jpeg|png|gif|bmp|webp))$", ErrorMessage = "O {0} tem de seguir o formato de caminho com uma das seguintes extensões:jpg, jpeg, png, gif, bmp, webp")]
 	
 

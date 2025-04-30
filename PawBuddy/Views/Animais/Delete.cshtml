@@ -6,58 +6,83 @@
 
 <h1>Delete</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Are you sure you want to delete this animal?</h3>
+
 <div>
     <h4>Animal</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Nome)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Nome)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Raca)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Raca)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Idade)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Idade)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Genero)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Genero)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Especie)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Especie)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Cor)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Cor)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Imagem)
+
+        <!-- Adicionando uma linha de texto para o caminho da imagem -->
+        <dt class="col-sm-2">
+            <p>Imagem</p>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Imagem)
+        <dd class="col-sm-10">
+            @if (!string.IsNullOrEmpty(Model.Imagem) && Model.Imagem != "example.png")
+            {
+                <!-- Exibe a imagem -->
+                <img src="@Url.Content(Model.Imagem)" alt="Imagem do Animal" class="img-fluid" style="max-width: 150px;"/>
+                <p>Caminho da imagem : @Model.Imagem</p> <!-- Exibe o caminho da imagem -->
+            }
+            else
+            {
+                <p>Imagem padrão não definida.</p>
+            }
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="Delete" method="post" id="deleteForm">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()">Confirm Delete</button> |
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        function confirmDelete() {
+            // Mostrar popup de confirmação
+            var result = confirm("Are you sure you want to delete this animal?");
+            if (result) {
+                // Se o usuário confirmar, submete o formulário
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}

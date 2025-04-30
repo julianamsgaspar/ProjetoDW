@@ -22,18 +22,6 @@ namespace PawBuddy.Controllers
         // GET: Animais
         public async Task<IActionResult> Index()
         {
-            
-            /*
-             * select *
-             * from fotografias f, utilizadores u, categorias c
-             * where f.categoriaFk = c.Id and f.donoFk = u.Id
-             */
-
-            //var listaFotografias = _context.Fotografias
-                //.Include(f => f.Categoria)
-               // .Include(f => f.Dono);
-           // return View(await listaFotografias.ToListAsync());
-            
             return View(await _context.Animal.ToListAsync());
         }
 
