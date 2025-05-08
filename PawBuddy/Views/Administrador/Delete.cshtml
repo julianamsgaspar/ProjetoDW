@@ -1,0 +1,71 @@
+@model Microsoft.AspNetCore.Identity.IdentityUser
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> _userManager
+
+@{
+    var utilizador = ViewData["Utilizador"] as PawBuddy.Models.Utilizador;
+    
+    if (Model == null)
+    {
+        <div class="alert alert-danger">
+            <p>Erro: Administrador não encontrado.</p>
+            <a asp-action="ListaAdmin" class="btn btn-secondary">Voltar</a>
+        </div>
+        return;
+    }
+}
+
+<div class="container mt-4">
+    <h1>Eliminar Administrador</h1>
+    
+    <div class="alert alert-warning">
+        <h4 class="alert-heading">Atenção!</h4>
+        <p>Tens a certeza que queres eliminar permanentemente este administrador?</p>
+        <hr>
+        <p class="mb-0">Esta ação não pode ser desfeita.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Detalhes do Administrador</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                @if (utilizador != null)
+                {
+                    <dt class="col-sm-4">Nome Completo:</dt>
+                    <dd class="col-sm-8">@utilizador.Nome</dd>
+                }
+
+                <dt class="col-sm-4">Email:</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
+
+                <dt class="col-sm-4">Telemóvel:</dt>
+                <dd class="col-sm-8">@Model.PhoneNumber</dd>
+
+                @if (utilizador != null)
+                {
+                    <dt class="col-sm-4">NIF:</dt>
+                    <dd class="col-sm-8">@utilizador.Nif</dd>
+
+                    <dt class="col-sm-4">Morada:</dt>
+                    <dd class="col-sm-8">@utilizador.Morada</dd>
+
+                    <dt class="col-sm-4">Código Postal:</dt>
+                    <dd class="col-sm-8">@utilizador.CodPostal</dd>
+                }
+            </dl>
+        </div>
+        <div class="card-footer">
+            <form asp-action="Delete" method="post" class="d-inline">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Confirmar Eliminação
+                </button>
+            </form>
+            <a asp-action="ListaAdmin" class="btn btn-secondary ml-2">
+                <i class="fas fa-arrow-left"></i> Cancelar
+            </a>
+        </div>
+    </div>
+</div>

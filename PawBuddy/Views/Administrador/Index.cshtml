@@ -1,0 +1,13 @@
+<div class="container mt-4">
+    <h5>Bem-vindo, @User.Identity.Name!</h5>
+
+    <h4 class="mt-3">Menu de Gestão</h4>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" asp-area="" asp-controller="Animais" asp-action="Index">Animais</a>
+        <a class="btn btn-primary" asp-area="" asp-controller="Utilizadores" asp-action="Index">Gestão de Utilizadores</a>
+        <a class="btn btn-primary" asp-area="" asp-controller="Administrador" asp-action="ListaAdmin">Gestão de Administradores</a>
+        <a class="btn btn-primary" asp-area="" asp-controller="IntencaoDeAdocao" asp-action="Index">Gestão de Adoções</a>
+        <a class="btn btn-primary" asp-area="" asp-controller="Adotam" asp-action="Index">Adoções Finais</a>
+        <a class="btn btn-primary" asp-area="" asp-controller="Doa" asp-action="Index">Gestão de Doações</a>
+    </div>
+</div>

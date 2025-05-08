@@ -1,0 +1,56 @@
+@model PawBuddy.Models.Utilizador
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> _userManager
+
+@{
+    var identityUser = ViewData["IdentityUser"] as IdentityUser;
+    
+    if (identityUser == null || Model == null)
+    {
+        <div class="alert alert-danger">
+            <p>Erro: Dados do utilizador não encontrados.</p>
+            <a asp-action="ListaAdmin" class="btn btn-secondary">Voltar</a>
+        </div>
+        return;
+    }
+}
+
+<div class="container mt-4">
+    <h1>Detalhes do Administrador</h1>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4>Informação do Administrador</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <!-- User information from IdentityUser -->
+                <dt class="col-sm-3">Nome de Utilizador:</dt>
+                <dd class="col-sm-9">@identityUser.UserName</dd>
+
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@identityUser.Email</dd>
+
+                <dt class="col-sm-3">Telemóvel:</dt>
+                <dd class="col-sm-9">@identityUser.PhoneNumber</dd>
+
+                <!-- Additional information from Utilizador -->
+                <dt class="col-sm-3">Nome Completo:</dt>
+                <dd class="col-sm-9">@Model.Nome</dd>
+
+                <dt class="col-sm-3">NIF:</dt>
+                <dd class="col-sm-9">@Model.Nif</dd>
+
+                <dt class="col-sm-3">Morada:</dt>
+                <dd class="col-sm-9">@Model.Morada</dd>
+
+                <dt class="col-sm-3">Código Postal:</dt>
+                <dd class="col-sm-9">@Model.CodPostal</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a asp-action="Edit" asp-route-id="@identityUser.Id" class="btn btn-primary">Editar</a>
+            <a asp-action="ListaAdmin" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+</div>

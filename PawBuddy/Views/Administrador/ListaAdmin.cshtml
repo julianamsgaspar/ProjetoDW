@@ -1,0 +1,31 @@
+
+<h1>Página do Administrador</h1>
+
+<p>
+    <a asp-action="Create">Criar novo Administrador</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Nome de Utilizador</th>
+        <th>Email</th>
+        <th>Número de Telemóvel</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.UserName</td>
+            <td>@item.Email</td>
+            <td>@item.PhoneNumber</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
