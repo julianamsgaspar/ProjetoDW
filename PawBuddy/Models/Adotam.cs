@@ -5,6 +5,7 @@ using PawBuddy.Models;
 
 
 namespace PawBuddy.Models;
+///olá
 /// <summary>
 /// Class associada as adoçoes definitivas 
 /// </summary>
