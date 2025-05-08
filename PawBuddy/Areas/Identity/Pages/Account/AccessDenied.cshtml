@@ -1,0 +1,45 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Acesso Negado";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger text-center">
+        <h1><i class="fas fa-ban"></i> @ViewData["Title"]</h1>
+        <hr>
+        <p class="lead">
+            Você não tem permissão para acessar esta página.
+        </p>
+        
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="mt-4">
+                <p>
+                    Logado como: <strong>@User.Identity.Name</strong><br>
+                    Tipo de usuário: <strong>@(User.IsInRole("Admin") ? "Administrador" : "Cliente")</strong>
+                </p>
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Voltar à Página Inicial
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="mt-4">
+                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Fazer Login
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .alert {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+}
