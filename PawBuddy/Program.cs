@@ -6,9 +6,12 @@ using PawBuddy.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configuração existente (mantida igual)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("ConStringMySQL") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("ConStringMySQL"),
+        new MySqlServerVersion(new Version(8, 0, 39))
+    ));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => {

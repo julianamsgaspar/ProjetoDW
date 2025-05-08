@@ -109,38 +109,55 @@ namespace PawBuddy.Controllers
         // POST: Administrador/Edit/5
         [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Nome, Idade,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
+        public async Task<IActionResult> Edit(string id, 
+            string Nome, 
+            string Telemovel, 
+            string Email, 
+            string Nif,
+            string Morada,
+            string CodPostal,
+            string Pais,
+            string Password,
+            int Id, // From hidden field
+            string IdentityUserId) // From hidden field
         {
-            if (id != utilizador.IdentityUserId)
+            if (id != IdentityUserId)
                 return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // Atualizar Utilizador
-                    _context.Update(utilizador);
-                    await _context.SaveChangesAsync();
+            // Update Utilizador
+            var utilizador = await _context.Utilizador.FindAsync(Id);
+            if (utilizador == null)
+                return NotFound();
 
-                    // Atualizar IdentityUser
-                    var identityUser = await _userManager.FindByIdAsync(id);
-                    if (identityUser != null)
-                    {
-                        identityUser.UserName = utilizador.Email;
-                        identityUser.Email = utilizador.Email;
-                        identityUser.PhoneNumber = utilizador.Telemovel;
-                        await _userManager.UpdateAsync(identityUser);
-                    }
-                }
-                catch (DbUpdateConcurrencyException)
+            utilizador.Nome = Nome;
+            utilizador.Telemovel = Telemovel;
+            utilizador.Email = Email;
+            utilizador.Nif = Nif;
+            utilizador.Morada = Morada;
+            utilizador.CodPostal = CodPostal;
+            utilizador.Pais = Pais;
+
+            _context.Update(utilizador);
+            await _context.SaveChangesAsync();
+
+            // Update IdentityUser
+            var identityUser = await _userManager.FindByIdAsync(id);
+            if (identityUser != null)
+            {
+                identityUser.UserName = Email;
+                identityUser.Email = Email;
+                identityUser.PhoneNumber = Telemovel;
+        
+                if (!string.IsNullOrEmpty(Password))
                 {
-                    if (!UtilizadorExists(utilizador.Id))
-                        return NotFound();
-                    throw;
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+                    await _userManager.ResetPasswordAsync(identityUser, token, Password);
                 }
-                return RedirectToAction(nameof(ListaAdmin));
+        
+                await _userManager.UpdateAsync(identityUser);
             }
-            return View(utilizador);
+
+            return RedirectToAction(nameof(ListaAdmin));
         }
 
         [HttpGet("Details/{id}")]
