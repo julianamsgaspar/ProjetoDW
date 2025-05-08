@@ -10,6 +10,7 @@ using PawBuddy.Models;
 
 namespace PawBuddy.Controllers
 {
+    
     public class AnimaisController : Controller
     {
         private readonly ApplicationDbContext _context;

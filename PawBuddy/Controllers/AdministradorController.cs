@@ -73,7 +73,7 @@ namespace PawBuddy.Controllers
                     Nif = Nif,
                     CodPostal = CodPostal,
                     Pais = Pais,
-                    Idade = Idade
+                    DataNascimento = Idade
                 };
 
                 _context.Utilizador.Add(novoUtilizador);

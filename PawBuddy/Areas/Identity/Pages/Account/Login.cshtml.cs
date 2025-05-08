@@ -65,9 +65,8 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
-
+            [Display(Name = "Username or Email")]
+            public string UsernameOrEmail { get; set; }
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -75,7 +74,6 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
-
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -83,6 +81,7 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
         }
+
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -109,9 +108,19 @@ namespace PawBuddy.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                string userName = Input.UsernameOrEmail;
+
+                if (Input.UsernameOrEmail.Contains("@"))
+                {
+                    // Procurar usuário pelo email
+                    var user = await _signInManager.UserManager.FindByEmailAsync(Input.UsernameOrEmail);
+                    if (user != null)
+                    {
+                        userName = user.UserName;
+                    }
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -136,5 +145,6 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             // If we got this far, something failed, redisplay form
             return Page();
         }
+
     }
 }
