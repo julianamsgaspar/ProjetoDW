@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +11,11 @@ using PawBuddy.Models;
 
 namespace PawBuddy.Controllers
 {
+    [Authorize(Roles = "Admin")] 
     /// <summary>
     /// Controller responsável pelos Utilizadores
     /// </summary>
+    
     public class UtilizadoresController : Controller
     {
         private readonly ApplicationDbContext _context;
