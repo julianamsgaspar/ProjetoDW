@@ -11,11 +11,11 @@ using PawBuddy.Models;
 
 namespace PawBuddy.Controllers
 {
-    [Authorize(Roles = "Admin")] 
     /// <summary>
-    /// Controller responsável pela Intençao dos utilizadores em adotar os animais 
+    /// Controlador responsável por gerir as intenções de adoção submetidas pelos utilizadores.
+    /// Acesso restrito a utilizadores com o papel de "Admin".
     /// </summary>
-    
+    [Authorize(Roles = "Admin")] 
     public class IntencaoDeAdocaoController : Controller
     
     {
@@ -25,7 +25,10 @@ namespace PawBuddy.Controllers
         {
             _context = context;
         }
-
+        
+        /// <summary>
+        /// Lista todas as intenções de adoção existentes.
+        /// </summary>
         // GET: intencaoDeAdocao
         public async Task<IActionResult> Index()
         {
@@ -35,6 +38,9 @@ namespace PawBuddy.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        /// <summary>
+        /// Mostra os detalhes de uma intenção de adoção específica.
+        /// </summary>
         // GET: intencaoDeAdocao/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -55,6 +61,9 @@ namespace PawBuddy.Controllers
             return View(intencaoDeAdocao);
         }
 
+        /// <summary>
+        /// Apresenta o formulário para criar uma nova intenção de adoção.
+        /// </summary>
         // GET: intencaoDeAdocao/Create
         public IActionResult Create()
         {
@@ -63,6 +72,9 @@ namespace PawBuddy.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Processa os dados do formulário de criação de uma nova intenção de adoção.
+        /// </summary>
         // POST: intencaoDeAdocao/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -94,6 +106,9 @@ namespace PawBuddy.Controllers
             return View(intencaoDeAdocao);
         }
 
+        /// <summary>
+        /// Apresenta o formulário de edição para uma intenção de adoção.
+        /// </summary>
         // GET: intencaoDeAdocao/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -112,12 +127,16 @@ namespace PawBuddy.Controllers
             return View(intencaoDeAdocao);
         }
 
+        /// <summary>
+        /// Processa os dados da edição de uma intenção de adoção.
+        /// Verifica se o ID da sessão corresponde ao da intenção.
+        /// </summary>
         // POST: intencaoDeAdocao/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Estado,temAnimais, temAnimais,Profissao,Residencia,Motivo,DataIA,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Estado,temAnimais,Profissao,Residencia,Motivo,DataIA,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
         {
             if (id != intencaoDeAdocao.Id)
             {
@@ -164,6 +183,9 @@ namespace PawBuddy.Controllers
             return View(intencaoDeAdocao);
         }
 
+        /// <summary>
+        /// Mostra o formulário de confirmação para apagar uma intenção de adoção.
+        /// </summary>
         // GET: intencaoDeAdocao/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -187,6 +209,10 @@ namespace PawBuddy.Controllers
             return View(intencaoDeAdocao);
         }
 
+        /// <summary>
+        /// Confirmação da exclusão da intenção de adoção.
+        /// Verifica se o ID corresponde ao da sessão.
+        /// </summary>
         // POST: intencaoDeAdocao/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -212,6 +238,9 @@ namespace PawBuddy.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Verifica se uma intenção de adoção com o ID especificado existe na base de dados.
+        /// </summary>
         private bool IntencaoDeAdocaoExists(int id)
         {
             return _context.Intencao.Any(e => e.Id == id);

@@ -12,6 +12,10 @@ using PawBuddy.Models;
 
 namespace PawBuddy.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pela gestão de doações. 
+    /// Apenas utilizadores com o perfil "Admin" têm acesso.
+    /// </summary>
     [Authorize(Roles = "Admin")] // Só admin acessa 
     public class DoaController : Controller
     {
@@ -22,6 +26,10 @@ namespace PawBuddy.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Apresenta a lista de todas as doações registadas no sistema.
+        /// </summary>
+        /// <returns>View com a lista de doações.</returns>
         // GET: Doa
         public async Task<IActionResult> Index()
         {
@@ -30,7 +38,12 @@ namespace PawBuddy.Controllers
                 Include(d => d.Utilizador);
             return View(await ListaDeDoacoes.ToListAsync());
         }
-
+    
+        /// <summary>
+        /// Apresenta os detalhes de uma doação específica.
+        /// </summary>
+        /// <param name="id">Identificador da doação.</param>
+        /// <returns>View com os detalhes da doação, ou NotFound se não existir.</returns>
         // GET: Doa/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -51,6 +64,10 @@ namespace PawBuddy.Controllers
             return View(doa);
         }
 
+        /// <summary>
+        /// Apresenta o formulário para criar uma nova doação.
+        /// </summary>
+        /// <returns>View de criação da doação.</returns>
         // GET: Doa/Create
         public IActionResult Create()
         {
@@ -59,6 +76,11 @@ namespace PawBuddy.Controllers
             return View();
         }
 
+        // <summary>
+        /// Processa a criação de uma nova doação.
+        /// </summary>
+        /// <param name="doa">Objeto com os dados da doação.</param>
+        /// <returns>Redireciona para o Index em caso de sucesso, senão retorna a mesma view com mensagens de erro.</returns>
         // POST: Doa/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -89,6 +111,11 @@ namespace PawBuddy.Controllers
             return View(doa);
         }
 
+        /// <summary>
+        /// Apresenta o formulário de edição de uma doação.
+        /// </summary>
+        /// <param name="id">Identificador da doação.</param>
+        /// <returns>View de edição ou NotFound se não existir.</returns>
         // GET: Doa/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -106,7 +133,13 @@ namespace PawBuddy.Controllers
             ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", doa.UtilizadorFK);
             return View(doa);
         }
-
+        
+        /// <summary>
+        /// Processa a atualização das informações de uma doação.
+        /// </summary>
+        /// <param name="id">Identificador da doação.</param>
+        /// <param name="doa">Objeto atualizado da doação.</param>
+        /// <returns>Redireciona para Index se for bem-sucedido, senão retorna a mesma view com mensagens de erro.</returns>
         // POST: Doa/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -143,7 +176,12 @@ namespace PawBuddy.Controllers
             ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", doa.UtilizadorFK);
             return View(doa);
         }
-
+        
+        /// <summary>
+        /// Apresenta a confirmação para eliminar uma doação.
+        /// </summary>
+        /// <param name="id">Identificador da doação.</param>
+        /// <returns>View com os dados da doação ou NotFound se não existir.</returns>
         // GET: Doa/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -164,6 +202,11 @@ namespace PawBuddy.Controllers
             return View(doa);
         }
 
+        /// <summary>
+        /// Confirma e executa a eliminação da doação do sistema.
+        /// </summary>
+        /// <param name="id">Identificador da doação a eliminar.</param>
+        /// <returns>Redireciona para a página Index após a eliminação.</returns>
         // POST: Doa/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -179,6 +222,11 @@ namespace PawBuddy.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Verifica se uma doação com o ID especificado existe na base de dados.
+        /// </summary>
+        /// <param name="id">ID da doação.</param>
+        /// <returns><c>true</c> se existir; caso contrário, <c>false</c>.</returns>
         private bool DoaExists(int id)
         {
             return _context.Doa.Any(e => e.Id == id);

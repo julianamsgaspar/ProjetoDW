@@ -11,11 +11,11 @@ using PawBuddy.Models;
 
 namespace PawBuddy.Controllers
 {
-    [Authorize(Roles = "Admin")] 
     /// <summary>
-    /// Controller responsável pelos Utilizadores
+    /// Controller responsável pela gestão dos Utilizadores.
+    /// Apenas acessível a utilizadores com o perfil de Admin.
     /// </summary>
-    
+    [Authorize(Roles = "Admin")] 
     public class UtilizadoresController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,12 +25,18 @@ namespace PawBuddy.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Lista todos os utilizadores registados.
+        /// </summary>
         // GET: Utilizadores
         public async Task<IActionResult> Index()
         {
             return View(await _context.Utilizador.ToListAsync());
         }
 
+        /// <summary>
+        /// Mostra os detalhes de um utilizador específico.
+        /// </summary>
         // GET: Utilizadores/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -49,18 +55,24 @@ namespace PawBuddy.Controllers
             return View(utilizador);
         }
 
+        // <summary>
+        /// Exibe o formulário para criação de um novo utilizador.
+        /// </summary>
         // GET: Utilizadores/Create
         public IActionResult Create()
         {
             return View();
         }
 
+        /// <summary>
+        /// Regista um novo utilizador na base de dados.
+        /// </summary>
         // POST: Utilizadores/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome, Idade,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
+        public async Task<IActionResult> Create([Bind("Id,Nome,DataNascimento,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
         {
             if (ModelState.IsValid)
             {
@@ -71,6 +83,9 @@ namespace PawBuddy.Controllers
             return View(utilizador);
         }
 
+        /// <summary>
+        /// Exibe o formulário de edição para um utilizador existente.
+        /// </summary>
         // GET: Utilizadores/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -85,19 +100,22 @@ namespace PawBuddy.Controllers
             {
                 return NotFound();
             } 
-            // guardamos em sessão o id do utilizador que o utilizador quer editar
+            // Guarda o ID do utilizador em sessão para validações de segurança posteriores
             // se ele fizer um post para um Id diferente, ele está a tentar alterar um utilizador diferente do que visualiza no ecrã
             HttpContext.Session.SetInt32("utilizadorId", utilizador.Id);
                          
             return View(utilizador);
         }
 
+        /// <summary>
+        /// Atualiza os dados de um utilizador, após validação da sessão.
+        /// </summary>
         // POST: Utilizadores/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([FromRoute]int id, [Bind("Id,Idade, Nome,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
+        public async Task<IActionResult> Edit([FromRoute]int id, [Bind("Id,DataNascimento,Nome,Nif,Telemovel,Morada,CodPostal,Email,Pais")] Utilizador utilizador)
         {
             if (id != utilizador.Id)
             {
@@ -112,8 +130,7 @@ namespace PawBuddy.Controllers
                 {
                     // vou buscar o id do utilizador da sessão
                     var utilizadorDaSessao = HttpContext.Session.GetInt32("utilizadorId");
-                    // se o id do utilizador da sessão for diferente do que recebemos
-                    // quer dizer que está a tentar alterar um utilizador diferente do que tem no ecrã
+                    // Verifica se o utilizador que está a tentar editar é o mesmo que estava na tela
                     if (utilizadorDaSessao != id)
                     {
                         ModelState.AddModelError("", "Erro: Não tens permissão");
@@ -121,7 +138,7 @@ namespace PawBuddy.Controllers
                     }
                     _context.Update(utilizador);
                     await _context.SaveChangesAsync();
-                    // colocamos o utilizadorId da sessão a 0, para ele não poder fazer POSTs sucessivos 
+                    // Limpa o ID da sessão para evitar edições duplicadas 
                     HttpContext.Session.SetInt32("utilizadorId", 0);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -140,6 +157,9 @@ namespace PawBuddy.Controllers
             return View(utilizador);
         }
 
+        /// <summary>
+        /// Exibe o formulário de confirmação para eliminar um utilizador.
+        /// </summary>
         // GET: Utilizadores/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -155,13 +175,16 @@ namespace PawBuddy.Controllers
                 return NotFound();
             }
 
-            // guardamos em sessão o id do utilizador que o utilizador quer apagar
+            // Guarda o ID em sessão para validação posterior
             // se ele fizer um post para um Id diferente, ele está a tentar apagar um utilizador diferente do que visualiza no ecrã
             HttpContext.Session.SetInt32("utilizadorId", utilizador.Id);
 
             return View(utilizador);
         }
 
+        /// <summary>
+        /// Apaga o utilizador da base de dados após confirmar a identidade via sessão.
+        /// </summary>
         // POST: Utilizadores/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -173,7 +196,7 @@ namespace PawBuddy.Controllers
             {
                 // vou buscar o id do utilizador da sessão
                 var utilizadorDaSessao = HttpContext.Session.GetInt32("utilizadorId");
-                // se o id do utilizador da sessão for diferente do que recebemos
+                // Verifica se é o mesmo utilizador que estava a ser exibido no momento da confirmação
                 // quer dizer que está a tentar apagar um utilizador diferente do que tem no ecrã
                 if (utilizadorDaSessao != id)
                 {
@@ -183,11 +206,14 @@ namespace PawBuddy.Controllers
             }
 
             await _context.SaveChangesAsync();
-            // impede que tente fazer o apagar do mesmo utilizador
+            // Limpa o ID da sessão para prevenir exclusões repetidas
             HttpContext.Session.SetInt32("utilizadorId",0);
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Verifica se um utilizador existe na base de dados com base no seu ID.
+        /// </summary>
         private bool UtilizadorExists(int id)
         {
             return _context.Utilizador.Any(e => e.Id == id);
