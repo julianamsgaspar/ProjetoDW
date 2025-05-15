@@ -23,7 +23,11 @@ namespace PawBuddy.Controllers
             _roleManager = roleManager;
             _context = context;
         }
-
+        
+        /// <summary>
+        /// Lista todos os utilizadores com a role "Administrador".
+        /// </summary>
+        /// <returns>Vista com a lista de administradores.</returns>
         // GET: Administrador/ListaAdmin
         [HttpGet("ListaAdmin")]
         public async Task<IActionResult> ListaAdmin()
@@ -31,14 +35,31 @@ namespace PawBuddy.Controllers
             var admins = await _userManager.GetUsersInRoleAsync("Administrador");
             return View(admins);
         }
-
+        
+        /// <summary>
+        /// Exibe o formulário para criação de um novo administrador.
+        /// </summary>
+        /// <returns>Vista de criação.</returns>
         // GET: Administrador/Create
         [HttpGet("Create")]
         public IActionResult Create()
         {
             return View();
         }
-
+        
+        /// <summary>
+        /// Processa os dados do formulário e cria um novo administrador.
+        /// </summary>
+        /// <param name="Nome">Nome do utilizador.</param>
+        /// <param name="Telemovel">Número de telefone.</param>
+        /// <param name="Email">Email do utilizador.</param>
+        /// <param name="Nif">Número de identificação fiscal.</param>
+        /// <param name="Morada">Endereço do utilizador.</param>
+        /// <param name="CodPostal">Código postal.</param>
+        /// <param name="Pais">País de residência.</param>
+        /// <param name="Idade">Data de nascimento.</param>
+        /// <param name="Password">Palavra-passe inicial.</param>
+        /// <returns>Redireciona para a lista se bem-sucedido ou retorna vista com erros.</returns>
         // POST: Administrador/Create
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
@@ -87,7 +108,12 @@ namespace PawBuddy.Controllers
             
             return View();
         }
-
+        
+        /// <summary>
+        /// Obtém os dados do administrador para edição.
+        /// </summary>
+        /// <param name="id">ID do IdentityUser.</param>
+        /// <returns>Vista de edição.</returns>
         // GET: Administrador/Edit/5
         [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(string id)
@@ -105,7 +131,22 @@ namespace PawBuddy.Controllers
             ViewData["IdentityUser"] = identityUser;
             return View(utilizador);
         }
-
+        
+        /// <summary>
+        /// Atualiza os dados do administrador tanto no Identity como na base de dados da aplicação.
+        /// </summary>
+        /// <param name="id">ID do IdentityUser.</param>
+        /// <param name="Nome">Nome atualizado.</param>
+        /// <param name="Telemovel">Telefone atualizado.</param>
+        /// <param name="Email">Email atualizado.</param>
+        /// <param name="Nif">NIF atualizado.</param>
+        /// <param name="Morada">Morada atualizada.</param>
+        /// <param name="CodPostal">Código postal atualizado.</param>
+        /// <param name="Pais">País atualizado.</param>
+        /// <param name="Password">Nova password (opcional).</param>
+        /// <param name="Id">ID da tabela Utilizador.</param>
+        /// <param name="IdentityUserId">ID do IdentityUser (validação cruzada).</param>
+        /// <returns>Redireciona após atualização.</returns>
         // POST: Administrador/Edit/5
         [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
@@ -159,7 +200,12 @@ namespace PawBuddy.Controllers
 
             return RedirectToAction(nameof(ListaAdmin));
         }
-
+        
+        /// <summary>
+        /// Exibe os detalhes de um administrador específico.
+        /// </summary>
+        /// <param name="id">ID do IdentityUser.</param>
+        /// <returns>Vista de detalhes do administrador.</returns>
         [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(string id)
         {
@@ -180,7 +226,12 @@ namespace PawBuddy.Controllers
             ViewData["IdentityUser"] = identityUser;
             return View(utilizador); // Or create a ViewModel that combines both
         }
-
+        
+        /// <summary>
+        /// Exibe a confirmação de eliminação de um administrador.
+        /// </summary>
+        /// <param name="id">ID do IdentityUser.</param>
+        /// <returns>Vista de confirmação.</returns>
         // GET: Administrador/Delete/5
         [HttpGet("Delete/{id}")]
         public async Task<IActionResult> Delete(string id)
@@ -208,7 +259,11 @@ namespace PawBuddy.Controllers
             return View(identityUser); // Main model is IdentityUser
         }
         
-
+        /// <summary>
+        /// Elimina permanentemente um administrador (Identity e dados associados).
+        /// </summary>
+        /// <param name="id">ID do utilizador a eliminar.</param>
+        /// <returns>Redireciona para a lista após eliminação.</returns>
         // POST: Administrador/Delete/5
         [HttpPost("Delete/{id}")]
         [ValidateAntiForgeryToken]
@@ -247,6 +302,11 @@ namespace PawBuddy.Controllers
             return RedirectToAction(nameof(ListaAdmin));
         }
 
+        /// <summary>
+        /// Verifica se um utilizador existe na base de dados da aplicação.
+        /// </summary>
+        /// <param name="id">ID da tabela Utilizador.</param>
+        /// <returns>True se existir, caso contrário False.</returns>
         private bool UtilizadorExists(int id)
         {
             return _context.Utilizador.Any(e => e.Id == id);
