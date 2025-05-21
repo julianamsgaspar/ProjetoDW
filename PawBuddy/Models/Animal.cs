@@ -21,6 +21,7 @@ public class Animal
 	/// <summary>
 	/// raça do animal
 	/// </summary>
+	[Display(Name = "Raça")]
     [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
 	[RegularExpression("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$", ErrorMessage = "A {0} não pode conter caracteres numéricos.")]
     [StringLength(50)] 
@@ -43,6 +44,7 @@ public class Animal
 	/// <summary>
 	/// especie do animal (gato, cão, etc)
 	/// </summary>
+	[Display(Name = "Espécie")]
 	[Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")] 
 	[StringLength(50)] 
     public string Especie { get; set; }
@@ -59,8 +61,6 @@ public class Animal
 	/// </summary>
 	// [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
 	[RegularExpression("^(.+/)?([^/]+\\.(jpg|jpeg|png|gif|bmp|webp))$", ErrorMessage = "O {0} tem de seguir o formato de caminho com uma das seguintes extensões:jpg, jpeg, png, gif, bmp, webp")]
-	
-
     public string Imagem { get; set; }
 	
 	/* *************************

@@ -28,6 +28,7 @@ public class Utilizador
     [Display(Name = "Data de Nascimento")]
     [DataType(DataType.Date)]
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+    [MaiorDeIdade(ErrorMessage = "O utilizador deve ter pelo menos 18 anos.")]
     public DateTime DataNascimento { get; set; }
     
     /// <summary>

@@ -6,7 +6,7 @@
 
 <h1>Criar</h1>
 
-<h4>Doa</h4>
+<h4>Doar</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -17,14 +17,9 @@
                 <input asp-for="PrecoAux" class="form-control" />
                 <span asp-validation-for="PrecoAux" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UtilizadorFK" class="control-label"></label>
-                <select asp-for="UtilizadorFK" class ="form-control" asp-items="ViewBag.UtilizadorFK"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="AnimalFK" class="control-label"></label>
-                <select asp-for="AnimalFK" class ="form-control" asp-items="ViewBag.AnimalFK"></select>
-            </div>
+            <input type="hidden" name='UtilizadorFK' asp-for="UtilizadorFK" />
+            <input type="hidden" name='AnimalFK'  asp-for="AnimalFK" />
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

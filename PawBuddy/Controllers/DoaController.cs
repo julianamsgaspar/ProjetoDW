@@ -16,7 +16,7 @@ namespace PawBuddy.Controllers
     /// Controlador responsável pela gestão de doações. 
     /// Apenas utilizadores com o perfil "Admin" têm acesso.
     /// </summary>
-    [Authorize(Roles = "Admin")] // Só admin acessa 
+    //[Authorize(Roles = "Admin")] // Só admin acessa 
     public class DoaController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -88,18 +88,33 @@ namespace PawBuddy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,PrecoAux,DataD,UtilizadorFK,AnimalFK")] Doa doa)
         {
-            doa.DataD = DateTime.Now;
-            var utilizador = _context.Utilizador.
+            
+            /*var utilizador = _context.Utilizador.
                 Where(u=> u.Id == doa.UtilizadorFK);
+            var animal = _context.Animal.
+                Where(u => u.Id == doa.AnimalFK);
+            
             if (!utilizador.Any())
             {
-                ModelState.AddModelError("UtilizadorFK", "Tem de selecionar um utilizador correto");
-            }
+                ModelState.AddModelError("UtilizadorFK", "Utilizador Inválido");
+                         
+                if (!animal.Any())
+                {
+                    
+                       ModelState.AddModelError("AnimalFK", "Animal Inválido");
+                                
+                    
+                }
+            }*/
+            doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
+                new CultureInfo("pt-PT"));
+                
+            doa.DataD = DateTime.Now;
+
 
             if (ModelState.IsValid)
             {
-                doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
-                    new CultureInfo("pt-PT"));
+                
                 
                 _context.Add(doa);
                 await _context.SaveChangesAsync();
@@ -152,12 +167,41 @@ namespace PawBuddy.Controllers
                 return NotFound();
             }
 
+            
+            // Verifica se o animal e utilizador existem
+            var utilizador = await _context.Utilizador.FindAsync(doa.UtilizadorFK);
+            var animal = await _context.Animal.FindAsync(doa.AnimalFK);
+    
+            if (utilizador == null || animal == null)
+            {
+                ModelState.AddModelError("", "Utilizador ou Animal não encontrado.");
+                return View(doa);
+            }
+            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(doa);
+                    var doacaoExistente= await _context.Doa.FindAsync(id);
+            
+                    if (doacaoExistente == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Atualiza apenas os campos permitidos
+                    doacaoExistente.Valor = doa.Valor;
+                    
+
+                    // Mantém as chaves estrangeiras originais
+                    doacaoExistente.UtilizadorFK = doa.UtilizadorFK;
+                    doacaoExistente.AnimalFK = doa.AnimalFK;
+
+                    _context.Update(doacaoExistente);
                     await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {

@@ -7,7 +7,7 @@ using PawBuddy.Models;
 
 namespace PawBuddy.Controllers
 {
-    [Route("Administrador")]
+    [Route("Administrador")] 
     public class AdministradorController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -32,7 +32,7 @@ namespace PawBuddy.Controllers
         [HttpGet("ListaAdmin")]
         public async Task<IActionResult> ListaAdmin()
         {
-            var admins = await _userManager.GetUsersInRoleAsync("Administrador");
+            var admins = await _userManager.GetUsersInRoleAsync("Admin");
             return View(admins);
         }
         
@@ -78,10 +78,10 @@ namespace PawBuddy.Controllers
             if (result.Succeeded)
             {
                 // Criar role se não existir
-                if (!await _roleManager.RoleExistsAsync("Administrador"))
-                    await _roleManager.CreateAsync(new IdentityRole("Administrador"));
+                if (!await _roleManager.RoleExistsAsync("Admin"))
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
 
-                await _userManager.AddToRoleAsync(identityUser, "Administrador");
+                await _userManager.AddToRoleAsync(identityUser, "Admin");
 
                 // Criar registro na tabela Utilizador
                 var novoUtilizador = new Utilizador
@@ -110,12 +110,11 @@ namespace PawBuddy.Controllers
         }
         
         /// <summary>
-        /// Obtém os dados do administrador para edição.
+        /// Exibe a vista de edição de um administrador
         /// </summary>
-        /// <param name="id">ID do IdentityUser.</param>
-        /// <returns>Vista de edição.</returns>
-        // GET: Administrador/Edit/5
-        [HttpGet("Edit/{id}")]
+        /// <param name="id">ID do IdentityUser</param>
+        /// <returns>Vista de edição</returns>
+        [HttpGet("Edit/{Id}")]
         public async Task<IActionResult> Edit(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -128,9 +127,14 @@ namespace PawBuddy.Controllers
             var utilizador = await _context.Utilizador
                 .FirstOrDefaultAsync(u => u.IdentityUserId == id);
 
+            if (utilizador == null)
+                return NotFound();
+
             ViewData["IdentityUser"] = identityUser;
-            return View(utilizador);
+
+            return View(utilizador); // Modelo principal é Utilizador
         }
+
         
         /// <summary>
         /// Atualiza os dados do administrador tanto no Identity como na base de dados da aplicação.
@@ -150,27 +154,28 @@ namespace PawBuddy.Controllers
         // POST: Administrador/Edit/5
         [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, 
-            string Nome, 
-            string Telemovel, 
-            string Email, 
+        public async Task<IActionResult> Edit(
+            string identityUserId,     // ID do IdentityUser vindo da rota
+            int utilizadorId,          // ID do Utilizador vindo do hidden input
+            string Nome,
+            DateTime DataNascimento,
+            string Telemovel,
+            string Email,
             string Nif,
             string Morada,
             string CodPostal,
             string Pais,
-            string Password,
-            int Id, // From hidden field
-            string IdentityUserId) // From hidden field
+            string Password
+        )
         {
-            if (id != IdentityUserId)
-                return NotFound();
-
-            // Update Utilizador
-            var utilizador = await _context.Utilizador.FindAsync(Id);
+            var utilizador = await _context.Utilizador.FindAsync(utilizadorId); // Id é int
             if (utilizador == null)
+            {
                 return NotFound();
-
+            }
+                
             utilizador.Nome = Nome;
+            utilizador.DataNascimento = DataNascimento;
             utilizador.Telemovel = Telemovel;
             utilizador.Email = Email;
             utilizador.Nif = Nif;
@@ -182,19 +187,19 @@ namespace PawBuddy.Controllers
             await _context.SaveChangesAsync();
 
             // Update IdentityUser
-            var identityUser = await _userManager.FindByIdAsync(id);
+            var identityUser = await _userManager.FindByIdAsync(identityUserId);
             if (identityUser != null)
             {
-                identityUser.UserName = Email;
+                identityUser.UserName = Nome;
                 identityUser.Email = Email;
                 identityUser.PhoneNumber = Telemovel;
-        
+
                 if (!string.IsNullOrEmpty(Password))
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
                     await _userManager.ResetPasswordAsync(identityUser, token, Password);
                 }
-        
+
                 await _userManager.UpdateAsync(identityUser);
             }
 
@@ -301,7 +306,7 @@ namespace PawBuddy.Controllers
             TempData["Sucesso"] = "Administrador eliminado com sucesso!";
             return RedirectToAction(nameof(ListaAdmin));
         }
-
+        
         /// <summary>
         /// Verifica se um utilizador existe na base de dados da aplicação.
         /// </summary>
