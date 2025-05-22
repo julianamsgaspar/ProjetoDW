@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ namespace PawBuddy.Controllers
     /// Apenas utilizadores com o perfil "Admin" têm acesso.
     /// </summary>
     //[Authorize(Roles = "Admin")] // Só admin acessa 
+    [Route("Doa")]
     public class DoaController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -69,10 +71,16 @@ namespace PawBuddy.Controllers
         /// </summary>
         /// <returns>View de criação da doação.</returns>
         // GET: Doa/Create
-        public IActionResult Create()
+        [HttpGet]
+        [Route("Create")]
+        public async Task<IActionResult>  Create([FromForm] int id)
         {
-            ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome");
-            ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome");
+            if (id == 0 || id == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.AnimalId = id;
             return View();
         }
 
@@ -85,37 +93,40 @@ namespace PawBuddy.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Route("Create/{id}")]
+        //[Route("Doa/Create/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,PrecoAux,DataD,UtilizadorFK,AnimalFK")] Doa doa)
+        public async Task<IActionResult> Create([FromForm] int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
         {
             
-            /*var utilizador = _context.Utilizador.
-                Where(u=> u.Id == doa.UtilizadorFK);
-            var animal = _context.Animal.
-                Where(u => u.Id == doa.AnimalFK);
-            
-            if (!utilizador.Any())
+            int idUser;
+            idUser = await _context.Utilizador
+                .Where(u => User.Identity.Name == u.Nome)
+                .Select(u => u.Id)
+                .FirstOrDefaultAsync();
+            if (idUser == null)
             {
-                ModelState.AddModelError("UtilizadorFK", "Utilizador Inválido");
-                         
-                if (!animal.Any())
-                {
-                    
-                       ModelState.AddModelError("AnimalFK", "Animal Inválido");
-                                
-                    
-                }
-            }*/
+                return NotFound();
+            }
+            if (id != doa.AnimalFK)
+            {
+                return NotFound();
+            }
+
+            int animal = await _context.Animal.Where(u => u.Id == id)
+                .Select(u => u.Id)
+                .FirstOrDefaultAsync();
+            if (animal == null)
+            {
+                return NotFound();
+            }
             doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
                 new CultureInfo("pt-PT"));
-                
-            doa.DataD = DateTime.Now;
-
-
             if (ModelState.IsValid)
             {
-                
-                
+                doa.AnimalFK = animal;
+                doa.UtilizadorFK = idUser;
+                doa.DataD = DateTime.Now;
                 _context.Add(doa);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

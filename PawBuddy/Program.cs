@@ -13,7 +13,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 39))
     ));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
+// Registrar o serviço em segundo plano
+builder.Services.AddHostedService<AdocaoBackgroundService>();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => {
     options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireDigit = true;
@@ -45,6 +46,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

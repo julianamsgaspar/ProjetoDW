@@ -17,6 +17,7 @@ namespace PawBuddy.Controllers
     /// Acesso restrito a utilizadores com o papel de "Admin".
     /// </summary>
     [Authorize(Roles = "Admin")] 
+    [Route("IntencaoDeAdocao")]
     public class IntencaoDeAdocaoController : Controller
     
     {
@@ -67,6 +68,7 @@ namespace PawBuddy.Controllers
         /// </summary>
         // GET: intencaoDeAdocao/Create
         [HttpGet]
+        [Route("Create")]
         public async Task<IActionResult> Create([FromRoute] int id)
         {
             ViewBag.AnimalId = id;
@@ -108,6 +110,11 @@ namespace PawBuddy.Controllers
             {
                 return NotFound();
             }
+            
+            // Verificar se já existe alguma intenção para este animal
+            var intencoesExistentes = await _context.Intencao
+                .Where(i => i.AnimalFK == id && i.Estado != EstadoAdocao.Rejeitado)
+                .ToListAsync();
 
             if (ModelState.IsValid)
            {
@@ -117,6 +124,23 @@ namespace PawBuddy.Controllers
                intencaoDeAdocao.Estado = EstadoAdocao.Reservado;
                // Mete a data sem mostrar ao utilizador, mete a data quando submete o "formulario"
                intencaoDeAdocao.DataIA = DateTime.Now;
+               // Definir estado inicial
+               
+               if (intencoesExistentes.Any())
+               {
+                   // Se já existem intenções, marcar todas como Emprocesso
+                   foreach (var existente in intencoesExistentes)
+                   {
+                       existente.Estado = EstadoAdocao.Emprocesso;
+                       _context.Update(existente);
+                   }
+                   intencaoDeAdocao.Estado = EstadoAdocao.Emprocesso;
+               }
+               else
+               {
+                   // Primeira intenção para este animal
+                   intencaoDeAdocao.Estado = EstadoAdocao.Emvalidacao;
+               }
                
                _context.Add(intencaoDeAdocao);
                await _context.SaveChangesAsync();
@@ -200,19 +224,26 @@ namespace PawBuddy.Controllers
                    
                    if (intencaoDeAdocao.Estado == EstadoAdocao.Concluido)
                    {
-                       Adotam finalAdotam = new Adotam();
+                       var finalAdotam = new Adotam();
                        finalAdotam.AnimalFK = existingIntencao.AnimalFK;
                        finalAdotam.UtilizadorFK = existingIntencao.UtilizadorFK;
                        finalAdotam.dateA= existingIntencao.DataIA;
                        _context.Adotam.Add(finalAdotam);
                            // Remove a existingIntencao da tabela (agora que o processo foi concluído)
-                       _context.Intencao.Remove(existingIntencao);
-
-                       // Salva as alterações no banco de dados
-                       _context.SaveChanges();
+                           // Remover todas as intenções para este animal
+                       var outrasIntencoes = await _context.Intencao
+                               .Where(i => i.AnimalFK == existingIntencao.AnimalFK)
+                               .ToListAsync(); 
+                       _context.Intencao.RemoveRange(outrasIntencoes);
                        
                        
                    }
+                   else if (intencaoDeAdocao.Estado == EstadoAdocao.Rejeitado)
+                   {
+                       // Apenas marcar como rejeitado (pode ser reconsiderado)
+                       _context.Update(existingIntencao);
+                   }
+                   
 
                    if (intencaoDeAdocao.Estado == EstadoAdocao.Rejeitado)
                    {
@@ -274,7 +305,7 @@ namespace PawBuddy.Controllers
        /// Verifica se o ID corresponde ao da sessão.
        /// </summary>
        // POST: intencaoDeAdocao/Delete/5
-       [HttpPost, ActionName("Delete")]
+       [HttpPost]
        [ValidateAntiForgeryToken]
        public async Task<IActionResult> DeleteConfirmed(int id)
        {
