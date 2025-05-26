@@ -17,7 +17,7 @@ namespace PawBuddy.Controllers
     /// Acesso restrito a utilizadores com o papel de "Admin".
     /// </summary>
     [Authorize(Roles = "Admin")] 
-    [Route("IntencaoDeAdocao")]
+
     public class IntencaoDeAdocaoController : Controller
     
     {
@@ -32,6 +32,7 @@ namespace PawBuddy.Controllers
         /// Lista todas as intenções de adoção existentes.
         /// </summary>
         // GET: intencaoDeAdocao
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Intencao
@@ -67,11 +68,18 @@ namespace PawBuddy.Controllers
         /// Apresenta o formulário para criar uma nova intenção de adoção.
         /// </summary>
         // GET: intencaoDeAdocao/Create
+
+        // [Route("Create/{id}")]
         [HttpGet]
-        [Route("Create")]
-        public async Task<IActionResult> Create([FromRoute] int id)
+        public async Task<IActionResult> Create( int id)
         {
+            if (id == 0 || id == null)
+            {
+                return NotFound();
+            }
             ViewBag.AnimalId = id;
+            var animal = await _context.Animal.Where(u => u.Id == id).FirstOrDefaultAsync();
+            ViewBag.Animal = animal;
             return View();
             
          
@@ -83,9 +91,9 @@ namespace PawBuddy.Controllers
         // POST: intencaoDeAdocao/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost("Create/{id}")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromRoute] int id, [Bind("Estado,temAnimais, quaisAnimais,Profissao,Residencia,Motivo,DataIA,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
+        public async Task<IActionResult> Create( int id, [Bind("Estado,temAnimais, quaisAnimais,Profissao,Residencia,Motivo,DataIA,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
         {
             int idUser;
             idUser = await _context.Utilizador
@@ -192,7 +200,7 @@ namespace PawBuddy.Controllers
            // Verifica se o animal e utilizador existem
            var utilizador = await _context.Utilizador.FindAsync(intencaoDeAdocao.UtilizadorFK);
            var animal = await _context.Animal.FindAsync(intencaoDeAdocao.AnimalFK);
-
+            
            if (utilizador == null || animal == null)
            {
                ModelState.AddModelError("", "Utilizador ou Animal não encontrado.");

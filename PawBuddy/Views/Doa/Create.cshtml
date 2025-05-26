@@ -13,7 +13,7 @@
         @{
             var animalId = ViewBag.AnimalId;
         }
-        <form asp-action="Create" asp-route-id="@animalId" method="post">
+        <form asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="PrecoAux" class="control-label"></label>

@@ -100,9 +100,37 @@ namespace PawBuddy.Areas.Identity.Pages.Account
     try
     {
         var user = CreateUser();
-        await _userStore.SetUserNameAsync(user, Input.Utilizador.Email, CancellationToken.None);
+        // 1. Verificar se o email já existe
+        var existingUser = await _userManager.FindByEmailAsync(Input.Utilizador.Email);
+        if (existingUser != null)
+        {
+            ModelState.AddModelError("Input.Utilizador.Email", "Este email já está registado.");
+            return Page();
+        }
+        
+        // 2. Verificar se o username é igual ao email
+        if (Input.Utilizador.Email.Equals(Input.Utilizador.Nome, StringComparison.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError("Input.Utilizador.Nome", "O Nome não pode ser igual ao email.");
+            return Page();
+        }
+        
+        // 3. Verificar se o username já existe
+        var existingUserByName = await _userManager.FindByNameAsync(Input.Utilizador.Nome);
+        if (existingUserByName != null)
+        {
+            ModelState.AddModelError("Input.Utilizador.Nome", "Este Nome já está em uso.");
+            return Page();
+        }
+        if (Input.Utilizador.Nome.Contains("@"))
+        {
+            ModelState.AddModelError("Input.Utilizador.Nome", "O Nome não pode conter '@'.");
+            return Page();
+        }
+        
+        await _userStore.SetUserNameAsync(user, Input.Utilizador.Nome, CancellationToken.None);
         await _emailStore.SetEmailAsync(user, Input.Utilizador.Email, CancellationToken.None);
-
+        
         var result = await _userManager.CreateAsync(user, Input.Password);
 
         if (result.Succeeded)

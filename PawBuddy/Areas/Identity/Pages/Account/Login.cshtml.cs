@@ -124,7 +124,16 @@ namespace PawBuddy.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    
+                    
+                    // Guardar o ID do utilizador autenticado na sessão
+                    //var user = await _signInManager.UserManager.FindByNameAsync(userName);
+
+                    //if (user != null) HttpContext.Session.SetString("UserId", user.Id);
+
                     return LocalRedirect(returnUrl);
+                    
+                    
                 }
                 if (result.RequiresTwoFactor)
                 {

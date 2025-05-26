@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    var total_doacoes = ViewBag.somaValores;
 }
 
 <h1>Página Inicial</h1>
@@ -51,3 +52,5 @@
 }
     </tbody>
 </table>
+<!-- Total das Doações -->
+<p><strong>Total das doações:</strong> @String.Format("{0:C}", total_doacoes)</p>

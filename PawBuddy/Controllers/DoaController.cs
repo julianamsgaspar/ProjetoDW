@@ -17,8 +17,8 @@ namespace PawBuddy.Controllers
     /// Controlador responsável pela gestão de doações. 
     /// Apenas utilizadores com o perfil "Admin" têm acesso.
     /// </summary>
-    //[Authorize(Roles = "Admin")] // Só admin acessa 
-    [Route("Doa")]
+    [Authorize] 
+    //[Route("Doa")]
     public class DoaController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -38,6 +38,10 @@ namespace PawBuddy.Controllers
             var ListaDeDoacoes = _context.Doa
                 .Include(d => d.Animal).
                 Include(d => d.Utilizador);
+            
+            decimal somaValores = ListaDeDoacoes.Sum(d => d.Valor);
+
+            ViewBag.SomaValores = somaValores;
             return View(await ListaDeDoacoes.ToListAsync());
         }
     
@@ -72,8 +76,7 @@ namespace PawBuddy.Controllers
         /// <returns>View de criação da doação.</returns>
         // GET: Doa/Create
         [HttpGet]
-        [Route("Create")]
-        public async Task<IActionResult>  Create([FromForm] int id)
+        public async Task<IActionResult>  Create( int id)
         {
             if (id == 0 || id == null)
             {
@@ -93,10 +96,8 @@ namespace PawBuddy.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Route("Create/{id}")]
-        //[Route("Doa/Create/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromForm] int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
+        public async Task<IActionResult> Create( int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
         {
             
             int idUser;
@@ -131,8 +132,8 @@ namespace PawBuddy.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", doa.AnimalFK);
-            ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", doa.UtilizadorFK);
+            //ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", doa.AnimalFK);
+            //ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", doa.UtilizadorFK);
             
             return View(doa);
         }
