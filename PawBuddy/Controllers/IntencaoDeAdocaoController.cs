@@ -16,7 +16,7 @@ namespace PawBuddy.Controllers
     /// Controlador responsável por gerir as intenções de adoção submetidas pelos utilizadores.
     /// Acesso restrito a utilizadores com o papel de "Admin".
     /// </summary>
-    [Authorize(Roles = "Admin")] 
+    //[Authorize(Roles = "Admin")] 
 
     public class IntencaoDeAdocaoController : Controller
     
@@ -123,7 +123,30 @@ namespace PawBuddy.Controllers
             var intencoesExistentes = await _context.Intencao
                 .Where(i => i.AnimalFK == id && i.Estado != EstadoAdocao.Rejeitado)
                 .ToListAsync();
-
+            // Check if animal already has "Emvalidação" or "Concluído" status
+            var statusBloqueadores = new List<EstadoAdocao> { EstadoAdocao.Emvalidacao, EstadoAdocao.Concluido };
+    
+            var animalIndisponivel = await _context.Intencao
+                .AnyAsync(i => i.AnimalFK == id && statusBloqueadores.Contains(i.Estado));
+    
+            if (animalIndisponivel)
+            {
+                ModelState.AddModelError(string.Empty, "Este animal já está em processo de adoção ou foi adotado e não está disponível.");
+                //return View(intencaoDeAdocao);
+            }
+    
+            // Check if user already has an intention for this animal
+            var intencaoUsuarioExistente = await _context.Intencao
+                .AnyAsync(i => i.AnimalFK == id && i.UtilizadorFK == idUser);
+    
+            if (intencaoUsuarioExistente)
+            {
+                ModelState.AddModelError(string.Empty, "Você já manifestou interesse em adotar este animal.");
+                //return View(intencaoDeAdocao);
+            }
+            
+            
+            //o utilizador nao pode adotar o mesmo animal 2 vezes e quando um a
             if (ModelState.IsValid)
            {
                intencaoDeAdocao.UtilizadorFK = idUser; 
@@ -132,7 +155,7 @@ namespace PawBuddy.Controllers
                intencaoDeAdocao.Estado = EstadoAdocao.Reservado;
                // Mete a data sem mostrar ao utilizador, mete a data quando submete o "formulario"
                intencaoDeAdocao.DataIA = DateTime.Now;
-               // Definir estado inicial
+               // Definir estado inicia
                
                if (intencoesExistentes.Any())
                {
@@ -149,12 +172,12 @@ namespace PawBuddy.Controllers
                    // Primeira intenção para este animal
                    intencaoDeAdocao.Estado = EstadoAdocao.Emvalidacao;
                }
-               
+               ViewBag.Animal = animal;
                _context.Add(intencaoDeAdocao);
                await _context.SaveChangesAsync();
                return RedirectToAction(nameof(Index));
            }
-          // ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", intencaoDeAdocao.AnimalFK);
+         //ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", intencaoDeAdocao.AnimalFK);
            //ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", intencaoDeAdocao.UtilizadorFK);
            return View(intencaoDeAdocao);
        }
@@ -189,7 +212,7 @@ namespace PawBuddy.Controllers
        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
        [HttpPost]
        [ValidateAntiForgeryToken]
-       public async Task<IActionResult> Edit(int id, [Bind("Id,Estado,temAnimais,quaisAnimais,Profissao,Residencia,Motivo,DataIA,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
+       public async Task<IActionResult> Edit(int id, [Bind("Id,Estado,temAnimais,quaisAnimais,Profissao,Residencia,Motivo,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
        {
            if (id != intencaoDeAdocao.Id)
            {
@@ -248,20 +271,11 @@ namespace PawBuddy.Controllers
                    }
                    else if (intencaoDeAdocao.Estado == EstadoAdocao.Rejeitado)
                    {
-                       // Apenas marcar como rejeitado (pode ser reconsiderado)
-                       _context.Update(existingIntencao);
-                   }
-                   
-
-                   if (intencaoDeAdocao.Estado == EstadoAdocao.Rejeitado)
-                   {
                        _context.Intencao.Remove(existingIntencao);
 
                        // Salva as alterações no banco de dados
                        _context.SaveChanges();
                    }
-
-
                    _context.Update(existingIntencao);
                    await _context.SaveChangesAsync();
 
@@ -317,24 +331,42 @@ namespace PawBuddy.Controllers
        [ValidateAntiForgeryToken]
        public async Task<IActionResult> DeleteConfirmed(int id)
        {
-           var intencaoDeAdocao = await _context.Intencao.FindAsync(id);
-           if (intencaoDeAdocao != null)
+           // First get the intention from database
+           var intencaoDeAdocao = await _context.Intencao
+               .Include(i => i.Animal)
+               .Include(i => i.Utilizador)
+               .FirstOrDefaultAsync(i => i.Id == id);
+    
+           if (intencaoDeAdocao == null)
            {
-               // vou buscar o id do utilizador da sessão
-               var idSessao = HttpContext.Session.GetInt32("idSessao");
-               // se o id do utilizador da sessão for diferente do que recebemos
-               // quer dizer que está a tentar apagar um utilizador diferente do que tem no ecrã
-               if (idSessao != id)
-               {
-                   return RedirectToAction(nameof(Index));
-               }
-               _context.Intencao.Remove(intencaoDeAdocao);
+               return NotFound();
            }
 
-           await _context.SaveChangesAsync();
-           // impede que tente fazer o apagar do mesmo utilizador
-           HttpContext.Session.SetInt32("idSessao",0);
-           return RedirectToAction(nameof(Index));
+           // Check session ID - security measure
+           var idSessao = HttpContext.Session.GetInt32("idSessao");
+           if (idSessao == null || idSessao != id)
+           {
+               // If session ID doesn't match or is null, redirect to details
+               return RedirectToAction(nameof(Details), new { id = id });
+           }
+
+           try
+           {
+               _context.Intencao.Remove(intencaoDeAdocao);
+               await _context.SaveChangesAsync();
+        
+               // Clear the session after successful deletion
+               HttpContext.Session.Remove("idSessao");
+        
+               return RedirectToAction(nameof(Index));
+           }
+           catch (DbUpdateException ex)
+           {
+               // Log the error (you should implement proper logging)
+               ModelState.AddModelError("", "Não foi possível eliminar. Tente novamente, e se o problema persistir contacte o administrador.");
+               return View("Delete", intencaoDeAdocao);
+           }
+
        }
 
        /// <summary>

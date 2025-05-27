@@ -15,7 +15,7 @@ namespace PawBuddy.Controllers
     /// Controller responsável pela gestão dos Utilizadores.
     /// Apenas acessível a utilizadores com o perfil de Admin.
     /// </summary>
-    [Authorize(Roles = "Admin")] 
+   // [Authorize(Roles = "Admin")] 
     public class UtilizadoresController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -38,15 +38,21 @@ namespace PawBuddy.Controllers
         /// Mostra os detalhes de um utilizador específico.
         /// </summary>
         // GET: Utilizadores/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id )
         {
             if (id == null)
             {
                 return NotFound();
             }
+            
 
+            // Busca o utilizador com todas as relações necessárias
             var utilizador = await _context.Utilizador
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(u => u.IntencaoDeAdocao)
+                .ThenInclude(ia => ia.Animal)  // Inclui os animais das intenções
+                .Include(u => u.Doa)               // Inclui as doações
+                .ThenInclude(d => d.Animal)     // Inclui os animais das doações
+                .FirstOrDefaultAsync(u => u.Id == id);
             if (utilizador == null)
             {
                 return NotFound();

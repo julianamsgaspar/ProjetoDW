@@ -38,6 +38,7 @@ public class AdocaoBackgroundService : BackgroundService
                                    i.Id != intencao.Id && 
                                    i.Estado != EstadoAdocao.Rejeitado)
                         .CountAsync();
+                    
 
                     if (outrasIntencoes == 0)
                     {
@@ -45,6 +46,7 @@ public class AdocaoBackgroundService : BackgroundService
                     }
                     else
                     {
+                        
                         // Muda para Emprocesso se houver outras intenções
                         intencao.Estado = EstadoAdocao.Emprocesso;
                         context.Update(intencao);
@@ -67,7 +69,6 @@ public class AdocaoBackgroundService : BackgroundService
             UtilizadorFK = intencao.UtilizadorFK,
             dateA = DateTime.Now
         };
-
         context.Adotam.Add(adotam);
         context.Intencao.Remove(intencao);
         await context.SaveChangesAsync();
