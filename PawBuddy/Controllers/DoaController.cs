@@ -97,7 +97,7 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
+        public async Task<IActionResult> Create([FromRoute] int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
         {
             
             int idUser;
@@ -113,13 +113,48 @@ namespace PawBuddy.Controllers
             {
                 return NotFound();
             }
-
+            
             int animal = await _context.Animal.Where(u => u.Id == id)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
             if (animal == null)
             {
                 return NotFound();
+            }
+            
+            // Foi verificado que a BD mete o id do animal como id da doação entao foi foram feitos ajustos para ter chaves unicas
+            // 1. Verifica se o objeto doa tem um ID válido (0 ou null)
+            if (doa.Id <= 0) // Simplifica a verificação (cobre null, 0 e negativos)
+            {
+                // Se não tiver ID válido:
+                // Busca o maior ID existente na tabela Doa de forma segura
+                int maxId = await _context.Doa
+                    .AsNoTracking() // Melhora performance (apenas leitura)
+                    .MaxAsync(d => (int?)d.Id) ?? 0; // Trata tabela vazia
+    
+                // Garante que o novo ID seja único
+                doa.Id = maxId + 1;
+            }
+            else // 2. Se o objeto doa já tem um ID definido
+            {
+                // Verifica se o ID já existe na base de dados
+                bool idExists = await _context.Doa
+                    .AsNoTracking()
+                    .AnyAsync(d => d.Id == doa.Id);
+    
+                // Se o ID já existe, substitui por um novo ID único
+                if (idExists)
+                {
+                    // Busca o próximo ID disponível de forma atômica
+                    int nextAvailableId = await _context.Doa
+                        .AsNoTracking()
+                        .MaxAsync(d => (int?)d.Id) ?? 0;
+        
+                    doa.Id = nextAvailableId + 1;
+        
+                }
+    
+                // Se o ID não existe, mantém o ID fornecido (já é único)
             }
             doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
                 new CultureInfo("pt-PT"));
@@ -132,9 +167,6 @@ namespace PawBuddy.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", doa.AnimalFK);
-            //ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", doa.UtilizadorFK);
-            
             return View(doa);
         }
 
@@ -255,6 +287,7 @@ namespace PawBuddy.Controllers
                 return NotFound();
             }
 
+            HttpContext.Session.SetInt32("idSessao", doa.Id);
             return View(doa);
         }
 
@@ -270,7 +303,15 @@ namespace PawBuddy.Controllers
         {
             var doa = await _context.Doa.FindAsync(id);
             if (doa != null)
-            {
+            {// vou buscar o id do utilizador da sessão
+                var idSessao = HttpContext.Session.GetInt32("idSessao");
+                // se o id do utilizador da sessão for diferente do que recebemos
+                // quer dizer que está a tentar apagar um utilizador diferente do que tem no ecrã
+                if (idSessao != id)
+                {
+                    return RedirectToAction(nameof(Details));
+                }
+                
                 _context.Doa.Remove(doa);
             }
 
