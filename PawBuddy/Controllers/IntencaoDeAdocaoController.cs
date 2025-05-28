@@ -172,7 +172,7 @@ namespace PawBuddy.Controllers
                    // Primeira intenção para este animal
                    intencaoDeAdocao.Estado = EstadoAdocao.Emvalidacao;
                }
-               ViewBag.Animal = animal;
+               ViewBag.Animal = animalId;
                _context.Add(intencaoDeAdocao);
                await _context.SaveChangesAsync();
                return RedirectToAction(nameof(Index));
@@ -266,8 +266,6 @@ namespace PawBuddy.Controllers
                            finalAdotam.dateA = intencaoExistente.DataIA;
                            _context.Adotam.Add(finalAdotam);
                        }
-
-                       // Remove a existingIntencao da tabela (agora que o processo foi concluído)
                            // Remover todas as intenções para este animal
                        var outrasIntencoes = await _context.Intencao
                                .Where(i => i.AnimalFK == intencaoExistente.AnimalFK)
@@ -280,15 +278,14 @@ namespace PawBuddy.Controllers
                    {
                    
                    // Apenas marcar como rejeitado (pode ser reconsiderado)
-                      _context.Intencao.Remove(existingIntencao);
+                      _context.Intencao.Remove(intencaoExistente);
                       _context.SaveChanges();
                     }
+                   
+                   // Apenas marcar como rejeitado (pode ser reconsiderado)
+                   _context.Intencao.Remove(intencaoExistente);
+                   _context.SaveChanges();
 
-                   }
-                   _context.Update(existingIntencao);
-                   await _context.SaveChangesAsync();
-
-                   return RedirectToAction(nameof(Index));
                }
                catch (DbUpdateConcurrencyException)
                {
