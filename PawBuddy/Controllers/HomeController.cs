@@ -1,5 +1,8 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using PawBuddy.Data;
 using PawBuddy.Models;
 
 namespace PawBuddy.Controllers;
@@ -11,14 +14,17 @@ public class HomeController : Controller
 {
     // Injeção de dependência para o serviço de logging
     private readonly ILogger<HomeController> _logger;
+    private readonly ApplicationDbContext _context;
+    private readonly IEmailSender _emailSender;
 
-    /// <summary>
-    /// Construtor que recebe o logger para registrar logs da aplicação.
-    /// </summary>
-    /// <param name="logger">Instância do logger injetado pelo framework</param>
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(
+        ILogger<HomeController> logger,
+        ApplicationDbContext context,
+        IEmailSender emailSender)
     {
         _logger = logger;
+        _context = context;
+        _emailSender = emailSender;
     }
     
     /// <summary>
@@ -27,6 +33,10 @@ public class HomeController : Controller
     /// <returns>View da página Index</returns>
     public IActionResult Index()
     {
+        var adotados = _context.Intencao
+            .Count(i => i.Estado == EstadoAdocao.Concluido);
+
+        ViewData["Adotados"] = adotados;
         return View();
     }
     
@@ -49,5 +59,16 @@ public class HomeController : Controller
     {
         // Cria um modelo de erro com o ID da requisição atual ou, se nulo, o identificador de rastreamento do HTTP
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    public async Task<IActionResult> TestEmail()
+    {
+        await _emailSender.SendEmailAsync(
+            "macielines3012@gmail.com",
+            "Teste de Email - PawBuddy",
+            "<h1>Funcionou!</h1><p>Este é um email de teste do PawBuddy.</p>"
+        );
+
+        return Content("Email enviado com sucesso.");
     }
 }

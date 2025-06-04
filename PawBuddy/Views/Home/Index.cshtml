@@ -1,8 +1,68 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Página Inicial"; // Define o título da página
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Header com imagem principal -->
+<header class="p-0 m-0">
+    <img src="/images/header.png" class="img-fluid w-100 d-block" alt="Banner de adoção de animais">
+</header>
+
+<!-- Secção de boas-vindas -->
+<div class="container py-5 fade-in">
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-uppercase">Bem-vindo ao <span class="text-primary text-uppercase">PawBuddy</span>!</h1>
+        <p class="lead">Encontre o seu novo melhor amigo entre dezenas de animais que aguardam por um lar cheio de amor.</p>
+
+        <!-- Botão para ver os animais disponíveis -->
+        <a class="btn btn-outline-info btn-lg mt-3" href="/Animais" aria-label="Ver todos os animais disponíveis">
+            <i class="bi bi-paw-fill me-2"></i> Ver todos os animais
+        </a>
+    </div>
+    <div class="text-center my-4">
+        <h3 class="text-uppercase font-italic text-secondary">
+            🐾 @ViewData["Adotados"] patudos já encontraram o seu doce lar 💕
+        </h3>
+    </div>
 </div>
+
+<!-- Separador visual -->
+<hr class="my-5" />
+
+<!-- Secção "Como Ajudar" -->
+<section class="bg-light py-5 fade-in">
+    <div class="container">
+        <h2 class="text-center mb-4">Como Ajudar</h2>
+        <div class="row text-center">
+            <!-- Bloco: Doações -->
+            <div class="col-md-4 mb-4">
+                <i class="bi bi-cash-coin display-4 text-success mb-3 icon-helper"></i>
+                <h4>Doações</h4>
+                <p>Ajude com ração, medicamentos ou uma contribuição financeira. Toda a ajuda faz a diferença!</p>
+            </div>
+
+            <!-- Bloco: Apadrinhamento -->
+            <div class="col-md-4 mb-4">
+                <i class="bi bi-heart-fill display-4 text-danger mb-3 icon-helper"></i>
+                <h4>Apadrinhamento</h4>
+                <p>Não pode adotar? Contacte-nos e apadrinhe um animal. Ajude com os seus cuidados até que ele encontre um lar.</p>
+            </div>
+
+            <!-- Bloco: Voluntariado -->
+            <div class="col-md-4 mb-4">
+                <i class="bi bi-people-fill display-4 text-primary mb-3 icon-helper"></i>
+                <h4>Voluntariado</h4>
+                <p>Doe o seu tempo! Ajude-nos a divulgar os nossos animais nas redes.</p>
+            </div>
+        </div>
+
+        @* 
+        <!-- Secção de IBAN para doações financeiras -->
+        <div class="text-center mt-5">
+            <p class="mb-2">💳 Apoie com transferência bancária:</p>
+            <div class="bg-white border rounded p-3 d-inline-block shadow-sm">
+                <strong>IBAN:</strong> PT50 0002 0123 5678 9015 4321 6
+            </div>
+        </div> 
+        *@
+    </div>
+</section>

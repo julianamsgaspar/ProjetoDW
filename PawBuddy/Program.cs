@@ -1,9 +1,11 @@
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using PawBuddy.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 // Configuração existente (mantida igual)
 var connectionString = builder.Configuration.GetConnectionString("ConStringMySQL") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
