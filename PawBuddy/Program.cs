@@ -1,6 +1,9 @@
 
+using System.Reflection;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using PawBuddy.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configuração existente (mantida igual)
 var connectionString = builder.Configuration.GetConnectionString("ConStringMySQL") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
+    options.UseMySql(  //sqlserver
         builder.Configuration.GetConnectionString("ConStringMySQL"),
         new MySqlServerVersion(new Version(8, 0, 39))
     ));
@@ -30,12 +33,39 @@ builder.Services.AddSession(options => {
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler=ReferenceHandler.IgnoreCycles);
+
+// add swagger
+// https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(
+    options =>
+    {
+        options.SwaggerDoc("v1",new OpenApiInfo {
+            Title="Minha API de Adoçoes e Doações para animais",
+            Version="v1",
+            Description="API para gestão de Utilizadores, Animais, Doações e Adoções",
+        });
+
+        // Caminho para o XML gerado
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory,xmlFile);
+        options.IncludeXmlComments(xmlPath);
+
+    }
+    
+    );
+
 
 var app = builder.Build();
 
 // Pipeline existente (mantido igual)
 if (app.Environment.IsDevelopment()) {
     app.UseMigrationsEndPoint();
+    // cria o swagger
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else {
     app.UseExceptionHandler("/Home/Error");
@@ -93,3 +123,4 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
