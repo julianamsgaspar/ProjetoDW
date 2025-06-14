@@ -5,6 +5,9 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>aspnet-PawBuddy-0e2c2a34-eeac-4eaa-a972-03d2ae7740ef</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>		<!-- Evita warnings por falta de comentários -->
+
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="MailKit" Version="4.12.1" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.13" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.13" />
@@ -27,6 +31,13 @@
         </PackageReference>
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.2" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.2" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\API\" />
     </ItemGroup>
 
 </Project>

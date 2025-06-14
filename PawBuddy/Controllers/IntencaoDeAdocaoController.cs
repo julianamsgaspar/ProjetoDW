@@ -269,8 +269,6 @@ namespace PawBuddy.Controllers
                            finalAdotam.dateA = DateTime.Now;
                            _context.Adotam.Add(finalAdotam);
                        }
-
-                       // Remove a existingIntencao da tabela (agora que o processo foi concluído)
                            // Remover todas as intenções para este animal
                        var outrasIntencoes = await _context.Intencao
                                .Where(i => i.AnimalFK == intencaoExistente.AnimalFK)
@@ -281,8 +279,7 @@ namespace PawBuddy.Controllers
                    }
                    else if (intencaoDeAdocao.Estado == EstadoAdocao.Rejeitado)
                    {
-                   
-                       // Apenas marcar como rejeitado (pode ser reconsiderado)
+                    // Apenas marcar como rejeitado (pode ser reconsiderado)
                        _context.Intencao.Remove(intencaoExistente);
                    }
                    // Salva todas as alterações no banco de dados
@@ -290,7 +287,7 @@ namespace PawBuddy.Controllers
             
                    // Redireciona para a lista após edição bem-sucedida
                    return RedirectToAction(nameof(Index));
-                   
+
                }
                catch (DbUpdateConcurrencyException)
                {

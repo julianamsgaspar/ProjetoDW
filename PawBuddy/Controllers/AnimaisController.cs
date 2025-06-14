@@ -33,10 +33,24 @@ namespace PawBuddy.Controllers
         /// </summary>
         /// <returns>Vista com a lista de animais.</returns>
         // GET: Animais
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchNome, string especie, string genero)
         {
-            return View(await _context.Animal.ToListAsync());
+            var animais = _context.Animal.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchNome))
+                animais = animais.Where(a => a.Nome.Contains(searchNome));
+
+            if (!string.IsNullOrEmpty(especie))
+                animais = animais.Where(a => a.Especie == especie);
+
+            if (!string.IsNullOrEmpty(genero))
+                animais = animais.Where(a => a.Genero == genero);
+
+            ViewData["CurrentFilter"] = searchNome;
+
+            return View(await animais.ToListAsync());
         }
+
         
         /// <summary>
         /// Exibe os detalhes de um animal específico.
