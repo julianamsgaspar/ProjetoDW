@@ -67,9 +67,9 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="DeleteConfirmed" method="post">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="DeleteConfirmed" class="btn btn-danger" /> |
         <a asp-action="Index">Voltar</a>
     </form>
 </div>

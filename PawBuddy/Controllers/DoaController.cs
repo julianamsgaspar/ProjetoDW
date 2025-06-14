@@ -204,7 +204,7 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Valor,DataD,UtilizadorFK,AnimalFK")] Doa doa)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,PrecoAux,DataD,UtilizadorFK,AnimalFK")] Doa doa)
         {
             if (id != doa.Id)
             {
@@ -221,26 +221,40 @@ namespace PawBuddy.Controllers
                 ModelState.AddModelError("", "Utilizador ou Animal não encontrado.");
                 return View(doa);
             }
+            var doacaoExistente= await _context.Doa.FindAsync(id);
+            
+            if (doacaoExistente == null)
+            {
+                return NotFound();
+            }
+            doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
+                new CultureInfo("pt-PT"));
+            // Atualiza apenas os campos permitidos
+            
+            if (!ModelState.IsValid)
+            {
+                    var erros = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                         // Por exemplo, para debug: 
+                         foreach(var erro in erros)
+                         {
+                             Console.WriteLine(erro); // Ou usa um logger
+                         }
+                         
+            }
+
             
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var doacaoExistente= await _context.Doa.FindAsync(id);
-            
-                    if (doacaoExistente == null)
-                    {
-                        return NotFound();
-                    }
-
-                    // Atualiza apenas os campos permitidos
+                    
                     doacaoExistente.Valor = doa.Valor;
                     
 
                     // Mantém as chaves estrangeiras originais
                     doacaoExistente.UtilizadorFK = doa.UtilizadorFK;
                     doacaoExistente.AnimalFK = doa.AnimalFK;
-
+                    doacaoExistente.DataD = DateTime.Now;
                     _context.Update(doacaoExistente);
                     await _context.SaveChangesAsync();
 
@@ -260,9 +274,11 @@ namespace PawBuddy.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            
+
             ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", doa.AnimalFK);
             ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", doa.UtilizadorFK);
-            return View(doa);
+            return View(doacaoExistente);
         }
         
         /// <summary>
