@@ -126,10 +126,12 @@ namespace PawBuddy.Controllers
             // Check if animal already has "Emvalidação" or "Concluído" status
             var statusBloqueadores = new List<EstadoAdocao> { EstadoAdocao.Emvalidacao, EstadoAdocao.Concluido };
     
-            var animalIndisponivel = await _context.Intencao
+            var animalIndisponivelIntencao = await _context.Intencao
                 .AnyAsync(i => i.AnimalFK == id && statusBloqueadores.Contains(i.Estado));
-    
-            if (animalIndisponivel)
+            var animalIndisponivelAdotam = await _context.Adotam.AnyAsync(i => i.AnimalFK == id);
+            
+            
+            if (animalIndisponivelIntencao || animalIndisponivelAdotam)
             {
                 ModelState.AddModelError(string.Empty, "Este animal já está em processo de adoção ou foi adotado e não está disponível.");
                 //return View(intencaoDeAdocao);
@@ -212,7 +214,7 @@ namespace PawBuddy.Controllers
        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
        [HttpPost]
        [ValidateAntiForgeryToken]
-       public async Task<IActionResult> Edit(int id, [Bind("Id,Estado,temAnimais,quaisAnimais,Profissao,Residencia,Motivo,UtilizadorFK,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
+       public async Task<IActionResult> Edit(int id, [Bind("Id,Estado,temAnimais,quaisAnimais,Profissao,Residencia,Motivo,UtilizadorFK,AnimalFK, DataIA")] IntencaoDeAdocao intencaoDeAdocao)
        {
            if (id != intencaoDeAdocao.Id)
            {
@@ -229,16 +231,17 @@ namespace PawBuddy.Controllers
                ModelState.AddModelError("", "Utilizador ou Animal não encontrado.");
                return View(intencaoDeAdocao);
            }
+           // Pesquisa a intenção original
+           var intencaoExistente = await _context.Intencao.FindAsync(id);
+
+           if (intencaoExistente == null){
+               return NotFound(); }
 
            if (ModelState.IsValid)
            {
                try
                {
-                // Pesquisa a intenção original
-                   var intencaoExistente = await _context.Intencao.FindAsync(id);
-
-                    if (intencaoExistente == null){
-                     return NotFound(); }
+                
 
                     // Atualiza apenas os campos permitidos
                    intencaoExistente.Estado = intencaoDeAdocao.Estado;
@@ -263,7 +266,7 @@ namespace PawBuddy.Controllers
                            var finalAdotam = new Adotam();
                            finalAdotam.AnimalFK = intencaoExistente.AnimalFK;
                            finalAdotam.UtilizadorFK = intencaoExistente.UtilizadorFK;
-                           finalAdotam.dateA = intencaoExistente.DataIA;
+                           finalAdotam.dateA = DateTime.Now;
                            _context.Adotam.Add(finalAdotam);
                        }
                            // Remover todas as intenções para este animal
@@ -276,15 +279,14 @@ namespace PawBuddy.Controllers
                    }
                    else if (intencaoDeAdocao.Estado == EstadoAdocao.Rejeitado)
                    {
-                   
-                   // Apenas marcar como rejeitado (pode ser reconsiderado)
-                      _context.Intencao.Remove(intencaoExistente);
-                      _context.SaveChanges();
-                    }
-                   
-                   // Apenas marcar como rejeitado (pode ser reconsiderado)
-                   _context.Intencao.Remove(intencaoExistente);
-                   _context.SaveChanges();
+                    // Apenas marcar como rejeitado (pode ser reconsiderado)
+                       _context.Intencao.Remove(intencaoExistente);
+                   }
+                   // Salva todas as alterações no banco de dados
+                   await _context.SaveChangesAsync();
+            
+                   // Redireciona para a lista após edição bem-sucedida
+                   return RedirectToAction(nameof(Index));
 
                }
                catch (DbUpdateConcurrencyException)
@@ -299,7 +301,7 @@ namespace PawBuddy.Controllers
                    }
                }
            }
-           return View(intencaoDeAdocao);
+           return View(intencaoExistente);
        }
 
        /// <summary>
@@ -337,7 +339,7 @@ namespace PawBuddy.Controllers
        [ValidateAntiForgeryToken]
        public async Task<IActionResult> DeleteConfirmed(int id)
        {
-           // First get the intention from database
+         
            var intencaoDeAdocao = await _context.Intencao
                .Include(i => i.Animal)
                .Include(i => i.Utilizador)
@@ -348,11 +350,10 @@ namespace PawBuddy.Controllers
                return NotFound();
            }
 
-           // Check session ID - security measure
+      
            var idSessao = HttpContext.Session.GetInt32("idSessao");
            if (idSessao == null || idSessao != id)
            {
-               // If session ID doesn't match or is null, redirect to details
                return RedirectToAction(nameof(Details), new { id = id });
            }
 
@@ -361,14 +362,14 @@ namespace PawBuddy.Controllers
                _context.Intencao.Remove(intencaoDeAdocao);
                await _context.SaveChangesAsync();
         
-               // Clear the session after successful deletion
+              
                HttpContext.Session.Remove("idSessao");
         
                return RedirectToAction(nameof(Index));
            }
            catch (DbUpdateException ex)
            {
-               // Log the error (you should implement proper logging)
+          
                ModelState.AddModelError("", "Não foi possível eliminar. Tente novamente, e se o problema persistir contacte o administrador.");
                return View("Delete", intencaoDeAdocao);
            }
