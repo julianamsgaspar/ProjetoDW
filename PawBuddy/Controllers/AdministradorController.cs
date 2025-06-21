@@ -7,13 +7,17 @@ using PawBuddy.Models;
 
 namespace PawBuddy.Controllers
 {
-    [Route("Administrador")] 
+    [Route("Administrador")]  // Rota base para todas as ações neste controller
     public class AdministradorController : Controller
     {
+        // Contexto da base de dados para dados específicos da aplicação
         private readonly ApplicationDbContext _context;
+        // Gestor de utilizadores para operações com IdentityUser
         private readonly UserManager<IdentityUser> _userManager;
+        // Gestor de roles para operações com IdentityRole
         private readonly RoleManager<IdentityRole> _roleManager;
         
+        // Construtor com injeção de dependências
         public AdministradorController(
             UserManager<IdentityUser> userManager, 
             RoleManager<IdentityRole> roleManager, 
@@ -32,8 +36,9 @@ namespace PawBuddy.Controllers
         [HttpGet("ListaAdmin")]
         public async Task<IActionResult> ListaAdmin()
         {
+            // Obter todos os utilizadores com a role "Admin"
             var admins = await _userManager.GetUsersInRoleAsync("Admin");
-            return View(admins);
+            return View(admins); // Retornar vista com a lista
         }
         
         /// <summary>
@@ -44,7 +49,7 @@ namespace PawBuddy.Controllers
         [HttpGet("Create")]
         public IActionResult Create()
         {
-            return View();
+            return View(); // Retornar vista vazia para criação
         }
         
         /// <summary>
@@ -65,47 +70,48 @@ namespace PawBuddy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string Nome, string Telemovel, string Email, string Nif, string Morada, string CodPostal, string Pais, DateTime Idade,  string Password)
         {
+            // Criar novo objeto IdentityUser com os dados recebidos
             var identityUser = new IdentityUser
             {
                 UserName = Nome, 
                 Email = Email,
                 PhoneNumber = Telemovel,
-                EmailConfirmed = true
+                EmailConfirmed = true      // Confirmar email automaticamente
             };
-
+            // Tentar criar o utilizador no sistema de autenticação
             var result = await _userManager.CreateAsync(identityUser, Password);
                 
-            if (result.Succeeded)
+            if (result.Succeeded)   // Se o utilizador foi criado com sucesso
             {
-                // Criar role se não existir
+                // Criar role "Admin" se não existir
                 if (!await _roleManager.RoleExistsAsync("Admin"))
                     await _roleManager.CreateAsync(new IdentityRole("Admin"));
-
+                // Adicionar o utilizador à role "Admin"
                 await _userManager.AddToRoleAsync(identityUser, "Admin");
 
-                // Criar registro na tabela Utilizador
+                // Criar registo na tabela Utilizador
                 var novoUtilizador = new Utilizador
                 {
                     Nome = Nome,
                     Telemovel = Telemovel,
                     Email = Email,
-                    IdentityUserId = identityUser.Id, // Importante: guardar a referência
+                    IdentityUserId = identityUser.Id, // Guardar a referência ao IdentityUser
                     Morada = Morada,
                     Nif = Nif,
                     CodPostal = CodPostal,
                     Pais = Pais,
                     DataNascimento = Idade
                 };
-
+                // Adicionar e guardar na base de dados
                 _context.Utilizador.Add(novoUtilizador);
                 await _context.SaveChangesAsync();
-
+                // Redirecionar para a lista de administradores
                 return RedirectToAction(nameof(ListaAdmin));
             }
-
+            // Se houve erros, adicioná-los ao ModelState
             foreach (var error in result.Errors)
                 ModelState.AddModelError(string.Empty, error.Description);
-            
+            // Voltar a mostrar a vista com os erros 
             return View();
         }
         
@@ -117,22 +123,22 @@ namespace PawBuddy.Controllers
         [HttpGet("Edit/{Id}")]
         public async Task<IActionResult> Edit(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))   // Verificar se o ID é válido
                 return NotFound();
-
+            // Procurar o utilizador no sistema de autenticação
             var identityUser = await _userManager.FindByIdAsync(id);
             if (identityUser == null)
                 return NotFound();
-
+            // Procurar o utilizador na base de dados da aplicação
             var utilizador = await _context.Utilizador
                 .FirstOrDefaultAsync(u => u.IdentityUserId == id);
 
             if (utilizador == null)
                 return NotFound();
-
+            // Passar o IdentityUser para a vista através de ViewData
             ViewData["IdentityUser"] = identityUser;
-
-            return View(utilizador); // Modelo principal é Utilizador
+            // Retornar vista com o modelo principal (Utilizador)
+            return View(utilizador); 
         }
 
         
@@ -156,7 +162,7 @@ namespace PawBuddy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             string identityUserId,     // ID do IdentityUser vindo da rota
-            int utilizadorId,          // ID do Utilizador vindo do hidden input
+            int utilizadorId,          // ID do Utilizador vindo do formulário
             string Nome,
             DateTime DataNascimento,
             string Telemovel,
@@ -168,12 +174,14 @@ namespace PawBuddy.Controllers
             string Password
         )
         {
+            // Procurar o utilizador na base de dados
             var utilizador = await _context.Utilizador.FindAsync(utilizadorId); // Id é int
             if (utilizador == null)
             {
                 return NotFound();
             }
                 
+            // Atualizar os dados do utilizador
             utilizador.Nome = Nome;
             utilizador.DataNascimento = DataNascimento;
             utilizador.Telemovel = Telemovel;
@@ -183,26 +191,31 @@ namespace PawBuddy.Controllers
             utilizador.CodPostal = CodPostal;
             utilizador.Pais = Pais;
 
+            // Guardar alterações na base de dados
             _context.Update(utilizador);
             await _context.SaveChangesAsync();
 
-            // Update IdentityUser
+            // Atualizar o IdentityUser
             var identityUser = await _userManager.FindByIdAsync(identityUserId);
             if (identityUser != null)
             {
+                // Atualizar propriedades básicas
                 identityUser.UserName = Nome;
                 identityUser.Email = Email;
                 identityUser.PhoneNumber = Telemovel;
 
+                // Se foi fornecida uma nova palavra-passe, atualizá-la
                 if (!string.IsNullOrEmpty(Password))
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
                     await _userManager.ResetPasswordAsync(identityUser, token, Password);
                 }
 
+                // Guardar alterações no Identity
                 await _userManager.UpdateAsync(identityUser);
             }
 
+            // Redirecionar para a lista de administradores
             return RedirectToAction(nameof(ListaAdmin));
         }
         
@@ -214,22 +227,24 @@ namespace PawBuddy.Controllers
         [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))  // Verificar se o ID é válido
                 return NotFound();
 
+            // Procurar o utilizador no sistema de autenticação
             var identityUser = await _userManager.FindByIdAsync(id);
             if (identityUser == null)
                 return NotFound();
-
+            
+            // Procurar o utilizador na base de dados
             var utilizador = await _context.Utilizador
                 .FirstOrDefaultAsync(u => u.IdentityUserId == id);
 
             if (utilizador == null)
                 return NotFound();
 
-            // Create a view model or use ViewData to pass both objects
+            // Passar o IdentityUser para a vista através de ViewData
             ViewData["IdentityUser"] = identityUser;
-            return View(utilizador); // Or create a ViewModel that combines both
+            return View(utilizador); // Modelo principal é o Utilizador
         }
         
         /// <summary>
@@ -241,27 +256,28 @@ namespace PawBuddy.Controllers
         [HttpGet("Delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))// Verificar se o ID é válido
                 return NotFound();
-
+            // Procurar o utilizador no sistema de autenticação
             var identityUser = await _userManager.FindByIdAsync(id);
             if (identityUser == null)
                 return NotFound();
 
+            // Procurar o utilizador na base de dados
             var utilizador = await _context.Utilizador
                 .FirstOrDefaultAsync(u => u.IdentityUserId == id);
 
             if (utilizador == null)
             {
-                // If Utilizador not found, we can still delete just the IdentityUser
-                ViewData["Utilizador"] = new Utilizador(); // Empty object to prevent null reference
+                // Se não encontrar na base de dados, criar objeto vazio
+                ViewData["Utilizador"] = new Utilizador(); 
             }
             else
             {
                 ViewData["Utilizador"] = utilizador;
             }
 
-            return View(identityUser); // Main model is IdentityUser
+            return View(identityUser); // Modelo principal é o IdentityUser
         }
         
         /// <summary>
@@ -274,11 +290,12 @@ namespace PawBuddy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
+            // Procurar o utilizador no sistema de autenticação
             var identityUser = await _userManager.FindByIdAsync(id);
             if (identityUser == null)
                 return NotFound();
 
-            // Verificar se é o próprio usuário
+            // Verificar se é o próprio utilizador a tentar eliminar-se
             if (_userManager.GetUserId(User) == id)
             {
                 TempData["Erro"] = "Não pode eliminar sua própria conta!";
@@ -295,14 +312,14 @@ namespace PawBuddy.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Remover do Identity
+            // Remover do sistema de autenticação
             var result = await _userManager.DeleteAsync(identityUser);
             if (!result.Succeeded)
             {
                 TempData["Erro"] = "Erro ao eliminar o administrador.";
                 return RedirectToAction(nameof(ListaAdmin));
             }
-
+            // Mensagem de sucesso e redirecionamento
             TempData["Sucesso"] = "Administrador eliminado com sucesso!";
             return RedirectToAction(nameof(ListaAdmin));
         }
