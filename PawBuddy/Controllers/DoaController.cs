@@ -23,6 +23,10 @@ namespace PawBuddy.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Construtor que recebe o contexto da base de dados
+        /// </summary>
+        /// <param name="context">Contexto da base de dados</param>
         public DoaController(ApplicationDbContext context)
         {
             _context = context;
@@ -35,12 +39,13 @@ namespace PawBuddy.Controllers
         // GET: Doa
         public async Task<IActionResult> Index()
         {
+            // Obter doações incluindo informações de Animal e Utilizador
             var ListaDeDoacoes = _context.Doa
                 .Include(d => d.Animal).
                 Include(d => d.Utilizador);
-            
+            // Calcular soma total dos valores doados
             decimal somaValores = ListaDeDoacoes.Sum(d => d.Valor);
-
+            // Passar o total para a view
             ViewBag.SomaValores = somaValores;
             return View(await ListaDeDoacoes.ToListAsync());
         }
@@ -53,11 +58,13 @@ namespace PawBuddy.Controllers
         // GET: Doa/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            // Verificar se o ID foi fornecido
             if (id == null)
             {
                 return NotFound();
             }
 
+            // Obter doação com informações relacionadas
             var doa = await _context.Doa
                 .Include(d => d.Animal)
                 .Include(d => d.Utilizador)
@@ -78,11 +85,13 @@ namespace PawBuddy.Controllers
         [HttpGet]
         public async Task<IActionResult>  Create( int id)
         {
+            // Validar ID do animal
             if (id == 0 || id == null)
             {
                 return NotFound();
             }
 
+            // Passar ID do animal para a view
             ViewBag.AnimalId = id;
             return View();
         }
@@ -99,7 +108,7 @@ namespace PawBuddy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromRoute] int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
         {
-            
+            // Obter ID do utilizador autenticado
             int idUser;
             idUser = await _context.Utilizador
                 .Where(u => User.Identity.Name == u.Nome)
@@ -109,11 +118,12 @@ namespace PawBuddy.Controllers
             {
                 return NotFound();
             }
+            // Verificar se o ID do animal corresponde
             if (id != doa.AnimalFK)
             {
                 return NotFound();
             }
-            
+            // Verificar se o animal existe
             int animal = await _context.Animal.Where(u => u.Id == id)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
@@ -127,7 +137,7 @@ namespace PawBuddy.Controllers
             if (doa.Id <= 0) // Simplifica a verificação (cobre null, 0 e negativos)
             {
                 // Se não tiver ID válido:
-                // Busca o maior ID existente na tabela Doa de forma segura
+                // Procura o maior ID existente na tabela Doa de forma segura
                 int maxId = await _context.Doa
                     .AsNoTracking() // Melhora performance (apenas leitura)
                     .MaxAsync(d => (int?)d.Id) ?? 0; // Trata tabela vazia
@@ -156,13 +166,16 @@ namespace PawBuddy.Controllers
     
                 // Se o ID não existe, mantém o ID fornecido (já é único)
             }
+            // Converter valor para decimal (formato português)
             doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
                 new CultureInfo("pt-PT"));
             if (ModelState.IsValid)
             {
+                // Preencher dados da doação
                 doa.AnimalFK = animal;
                 doa.UtilizadorFK = idUser;
                 doa.DataD = DateTime.Now;
+                // Guardar na base de dados
                 _context.Add(doa);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -183,6 +196,7 @@ namespace PawBuddy.Controllers
                 return NotFound();
             }
 
+            // Obter doação a editar
             var doa = await _context.Doa.FindAsync(id);
             if (doa == null)
             {
@@ -206,6 +220,7 @@ namespace PawBuddy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,PrecoAux,DataD,UtilizadorFK,AnimalFK")] Doa doa)
         {
+            // Verificar se o ID corresponde
             if (id != doa.Id)
             {
                 return NotFound();
@@ -221,16 +236,19 @@ namespace PawBuddy.Controllers
                 ModelState.AddModelError("", "Utilizador ou Animal não encontrado.");
                 return View(doa);
             }
+            // Obter doação existente
             var doacaoExistente= await _context.Doa.FindAsync(id);
             
             if (doacaoExistente == null)
             {
                 return NotFound();
             }
+            // Converter valor para decimal 
             doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
                 new CultureInfo("pt-PT"));
             // Atualiza apenas os campos permitidos
             
+            // Mostrar erros de validação no console (debug)
             if (!ModelState.IsValid)
             {
                     var erros = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
@@ -247,7 +265,7 @@ namespace PawBuddy.Controllers
             {
                 try
                 {
-                    
+                    // Atualizar apenas campos permitidos
                     doacaoExistente.Valor = doa.Valor;
                     
 
@@ -293,7 +311,7 @@ namespace PawBuddy.Controllers
             {
                 return NotFound();
             }
-
+            // Obter doação com informações relacionadas
             var doa = await _context.Doa
                 .Include(d => d.Animal)
                 .Include(d => d.Utilizador)
@@ -303,6 +321,7 @@ namespace PawBuddy.Controllers
                 return NotFound();
             }
 
+            // Guardar ID em sessão para validação
             HttpContext.Session.SetInt32("idSessao", doa.Id);
             return View(doa);
         }
@@ -327,7 +346,7 @@ namespace PawBuddy.Controllers
                 {
                     return RedirectToAction(nameof(Details));
                 }
-                
+                // Eliminar doação
                 _context.Doa.Remove(doa);
             }
 

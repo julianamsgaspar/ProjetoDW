@@ -18,6 +18,9 @@ using PawBuddy.Models;
 
 namespace PawBuddy.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Classe responsável pelo processo de registo
+    /// </summary>
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -28,6 +31,15 @@ namespace PawBuddy.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// // Construtor: recebe todos os serviços necessários
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="userStore"></param>
+        /// <param name="signInManager"></param>
+        /// <param name="logger"></param>
+        /// <param name="emailSender"></param>
+        /// <param name="context"></param>
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
@@ -46,9 +58,9 @@ namespace PawBuddy.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } // Dados do formulário de registo
 
-        public string ReturnUrl { get; set; }
+        public string ReturnUrl { get; set; } // URL para onde redirecionar após sucesso
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
@@ -58,37 +70,49 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }*/
 
+            // Palavra-passe obrigatória, com mínimo de 6 caracteres
             [Required]
             [StringLength(100, ErrorMessage = "A palavra-passe deve ter entre {2} e {1} caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
 
+            // Campo de confirmação de palavra-passe, tem de coincidir com a anterior
             [DataType(DataType.Password)]
             [Display(Name = "Confirmar Password")]
             [Compare("Password", ErrorMessage = "A password e a confirmação não coincidem.")]
             public string ConfirmPassword { get; set; }
 
+            // Objeto do tipo Utilizador (modelo personalizado com dados adicionais)
             public Utilizador Utilizador { get; set; }
         }
 
+        /// <summary>
+        /// Método chamado quando a página é carregada
+        /// </summary>
+        /// <param name="returnUrl"></param>
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
+        /// <summary>
+        /// Método chamado quando o formulário é submetido
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
 {
     _logger.LogInformation("Iniciando processo de registro..."); // <-- NOVO
-    
+    // Validação de modelo (dados mal preenchidos)
     if (!ModelState.IsValid)
     {
         _logger.LogWarning("ModelState inválido. Erros: " + 
                            string.Join(", ", ModelState.Values
                                .SelectMany(v => v.Errors)
                                .Select(e => e.ErrorMessage))); // <-- NOVO
-        return Page();
+        return Page(); // mostra os erros
     }
     returnUrl ??= Url.Content("~/");
     ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -99,7 +123,7 @@ namespace PawBuddy.Areas.Identity.Pages.Account
     
     try
     {
-        var user = CreateUser();
+        var user = CreateUser();// cria um novo IdentityUser
         // 1. Verificar se o email já existe
         var existingUser = await _userManager.FindByEmailAsync(Input.Utilizador.Email);
         if (existingUser != null)
@@ -122,15 +146,18 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             ModelState.AddModelError("Input.Utilizador.Nome", "Este Nome já está em uso.");
             return Page();
         }
+        // Nome de utilizador não pode conter '@'
         if (Input.Utilizador.Nome.Contains("@"))
         {
             ModelState.AddModelError("Input.Utilizador.Nome", "O Nome não pode conter '@'.");
             return Page();
         }
         
+        // Preenche o nome de utilizador e email no IdentityUser
         await _userStore.SetUserNameAsync(user, Input.Utilizador.Nome, CancellationToken.None);
         await _emailStore.SetEmailAsync(user, Input.Utilizador.Email, CancellationToken.None);
         
+        // Cria o utilizador na base de dados com a palavra-passe
         var result = await _userManager.CreateAsync(user, Input.Password);
 
         if (result.Succeeded)
@@ -166,6 +193,7 @@ namespace PawBuddy.Areas.Identity.Pages.Account
                 return RedirectToPage("RegisterConfirmation", new { email = Input.Utilizador.Email, returnUrl });
             }
 
+            // Inicia sessão do utilizador automaticamente
             await _signInManager.SignInAsync(user, isPersistent: false);
             return LocalRedirect(returnUrl);
         }
@@ -184,7 +212,11 @@ namespace PawBuddy.Areas.Identity.Pages.Account
 
     return Page();
 }
-
+/// <summary>
+/// Cria uma instância de IdentityUser
+/// </summary>
+/// <returns></returns>
+/// <exception cref="InvalidOperationException"></exception>
         private IdentityUser CreateUser()
         {
             try
@@ -198,6 +230,11 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             }
         }
 
+        /// <summary>
+        /// // Obtém o store que permite associar emails a utilizadores5
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
         private IUserEmailStore<IdentityUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
