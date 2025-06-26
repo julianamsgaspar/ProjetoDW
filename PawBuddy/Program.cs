@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PawBuddy.Data;
+using PawBuddy.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IEmailSender, EmailSender>();
@@ -65,9 +66,11 @@ var app = builder.Build();
 // Pipeline existente (mantido igual)
 if (app.Environment.IsDevelopment()) {
     app.UseMigrationsEndPoint();
+    app.UseItToSeedSqlServer(); 
     // cria o swagger
     app.UseSwagger();
     app.UseSwaggerUI();
+    
 }
 else {
     app.UseExceptionHandler("/Home/Error");

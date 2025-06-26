@@ -104,4 +104,6 @@ public class Utilizador
     /// Lista de doações que o utilizador já fez aos animais
     /// </summary>
     public ICollection<Doa> Doa { get; set; } = new List<Doa>();
+
+
 }
