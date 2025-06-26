@@ -18,7 +18,7 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Adotam> Adotam { get; set; }
     
     //adicionar metodo da seed
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    /*protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
     
@@ -29,5 +29,5 @@ public class ApplicationDbContext : IdentityDbContext
                 .HasForeignKey(u => u.IdentityUserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-    }
+    }*/
 }
