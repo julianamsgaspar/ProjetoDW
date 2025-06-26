@@ -250,7 +250,7 @@ internal class DbInitializer
     
         var utilizadoress = Array.Empty<Utilizador>();
         // Se não houver utilizadores, cria-os q    
-        if (!dbContext.Utilizador.Any())
+        if (novosUtilizadoresIdentity.Length !=0)
         {
             // Obtém os utilizadores Identity criados anteriormente
             
@@ -429,28 +429,28 @@ internal class DbInitializer
                     Animal = animaisLista[0], // Bobby
                     Utilizador = utilizadoress[1], // José Mendes
                     DataD = DateTime.Now.AddDays(-20),
-                    PrecoAux = "65.0"
+                    Valor = (decimal)65.5
                 },
                 new Doa
                 {
                     Animal = animaisLista[2], // Max
                     Utilizador = utilizadoress[4], // Maria Oliveira
                     DataD = DateTime.Now.AddDays(-12),
-                    PrecoAux = "10"
+                    Valor = (decimal)10.5
                 },
                 new Doa
                 {
                     Animal = animaisLista[5], // Mia
                     Utilizador = utilizadoress[6], // Sofia Almeida
                     DataD = DateTime.Now.AddDays(-8),
-                    PrecoAux = "22"
+                    Valor = (decimal)5.5
                 },
                 new Doa
                 {
                     Animal = animaisLista[9], // Biscoito
                     Utilizador = utilizadoress[8], // Inês Ferreira
                     DataD = DateTime.Now.AddDays(-3),
-                    PrecoAux = "13.50"
+                    Valor= (decimal)25.5
                 }
             ];
 
