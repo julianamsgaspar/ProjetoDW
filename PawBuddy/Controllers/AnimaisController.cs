@@ -53,8 +53,8 @@ namespace PawBuddy.Controllers
         /// </summary>
         /// <returns>Vista com a lista de animais.</returns>
         // GET: Animais
-        [AllowAnonymous]  
-        public async Task<IActionResult> Index(string searchNome, string especie, string genero)
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(string searchNome, string especie, string genero, int page = 1, int pageSize = 9)
         {
             var animais = _context.Animal.AsQueryable();
 
@@ -67,10 +67,24 @@ namespace PawBuddy.Controllers
             if (!string.IsNullOrEmpty(genero))
                 animais = animais.Where(a => a.Genero == genero);
 
-            ViewData["CurrentFilter"] = searchNome;
+            int totalItems = await animais.CountAsync();
 
-            return View(await animais.ToListAsync());
+            var animaisPaginados = await animais
+                .OrderBy(a => a.Nome)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewData["CurrentFilter"] = searchNome ?? "";
+            ViewData["CurrentEspecie"] = especie ?? "";
+            ViewData["CurrentGenero"] = genero ?? "";
+
+            return View(animaisPaginados);
         }
+
+
 
         
         /// <summary>

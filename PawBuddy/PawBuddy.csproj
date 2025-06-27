@@ -34,6 +34,7 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.2" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.2" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.2" />
+        <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
     </ItemGroup>
 
     <ItemGroup>

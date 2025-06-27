@@ -1,4 +1,12 @@
+@using Azure.Core
 @model IEnumerable<PawBuddy.Models.Animal>
+@{
+    int currentPage = ViewData["CurrentPage"] as int? ?? 1;
+    int totalPages = ViewData["TotalPages"] as int? ?? 1;
+    string currentFilter = ViewData["CurrentFilter"] as string ?? "";
+    string currentEspecie = ViewData["CurrentEspecie"] as string ?? "";
+    string currentGenero = ViewData["CurrentGenero"] as string ?? "";
+}
 
 @{
     ViewData["Title"] = "Index";
@@ -14,8 +22,8 @@
 <body>
 <!-- Título e introdução -->
 <div class="text-center my-4">
-    <h1 class="display-5 text-primary">🐾 Animais Disponíveis para Adoção</h1>
-    <p class="lead">Conheça os nossos patudos que estão à espera de um lar cheio de carinho!</p>
+    <h1 class="display-5 text-primary">Animais Disponíveis para Adoção</h1>
+    <p class="lead">Conheça os nossos patudos que desejam um lar cheio de carinho!</p>
 </div>
 
 @* Botão de criar novo animal - visível apenas para administradores *@
@@ -105,6 +113,28 @@
         }
     </div>
 </div>
+@if ((int)ViewData["TotalPages"] > 1)
+{
+    <nav aria-label="Paginação" class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= (int)ViewData["TotalPages"]; i++)
+            {
+                <li class="page-item @(i == (int)ViewData["CurrentPage"] ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-searchNome="@ViewData["CurrentFilter"]"
+                       asp-route-especie="@ViewData["CurrentEspecie"]"
+                       asp-route-genero="@ViewData["CurrentGenero"]">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+
+}
+
 </body>
 
 @section Scripts {
