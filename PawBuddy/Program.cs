@@ -1,8 +1,12 @@
 
+using System.Reflection;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using PawBuddy.Data;
+using PawBuddy.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IEmailSender, EmailSender>();
@@ -18,13 +22,13 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Registrar o serviço em segundo plano
 builder.Services.AddHostedService<AdocaoBackgroundService>();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => {
-    options.SignIn.RequireConfirmedAccount = true;
+    options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8;
 })
 .AddRoles<IdentityRole>()
-
 .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(10);
@@ -32,6 +36,30 @@ builder.Services.AddSession(options => {
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler=ReferenceHandler.IgnoreCycles);
+
+// add swagger
+// https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(
+    options =>
+    {
+        options.SwaggerDoc("v1",new OpenApiInfo {
+            Title="Minha API de Adoçoes e Doações para animais",
+            Version="v1",
+            Description="API para gestão de Utilizadores, Animais, Doações e Adoções",
+        });
+
+        // Caminho para o XML gerado
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory,xmlFile);
+        options.IncludeXmlComments(xmlPath);
+
+    }
+    
+    );
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("NaoAdmin", policy =>
@@ -45,6 +73,11 @@ var app = builder.Build();
 // Pipeline existente (mantido igual)
 if (app.Environment.IsDevelopment()) {
     app.UseMigrationsEndPoint();
+    app.UseItToSeedSqlServer(); 
+    // cria o swagger
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    
 }
 else {
     app.UseExceptionHandler("/Home/Error");

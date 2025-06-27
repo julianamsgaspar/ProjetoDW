@@ -1,6 +1,6 @@
-﻿/*namespace PawBuddy.Data.Seed;
+﻿namespace PawBuddy.Data.Seed;
 
-public class DbInitializerExtension
+public static class DbInitializerExtension
 {
     public static IApplicationBuilder UseItToSeedSqlServer(this IApplicationBuilder app) {
             ArgumentNullException.ThrowIfNull(app, nameof(app));
@@ -17,5 +17,5 @@ public class DbInitializerExtension
 
             return app;
         }
-  
-}*/
+
+}

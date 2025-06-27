@@ -23,6 +23,10 @@ namespace PawBuddy.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Construtor que recebe o contexto da base de dados
+        /// </summary>
+        /// <param name="context">Contexto da base de dados</param>
         public DoaController(ApplicationDbContext context)
         {
             _context = context;
@@ -35,12 +39,13 @@ namespace PawBuddy.Controllers
         // GET: Doa
         public async Task<IActionResult> Index()
         {
+            // Obter doações incluindo informações de Animal e Utilizador
             var ListaDeDoacoes = _context.Doa
                 .Include(d => d.Animal).
                 Include(d => d.Utilizador);
-            
+            // Calcular soma total dos valores doados
             decimal somaValores = ListaDeDoacoes.Sum(d => d.Valor);
-
+            // Passar o total para a view
             ViewBag.SomaValores = somaValores;
             return View(await ListaDeDoacoes.ToListAsync());
         }
@@ -53,11 +58,13 @@ namespace PawBuddy.Controllers
         // GET: Doa/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            // Verificar se o ID foi fornecido
             if (id == null)
             {
                 return NotFound();
             }
 
+            // Obter doação com informações relacionadas
             var doa = await _context.Doa
                 .Include(d => d.Animal)
                 .Include(d => d.Utilizador)
@@ -78,11 +85,13 @@ namespace PawBuddy.Controllers
         [HttpGet]
         public async Task<IActionResult>  Create( int id)
         {
+            // Validar ID do animal
             if (id == 0 || id == null)
             {
                 return NotFound();
             }
 
+            // Passar ID do animal para a view
             ViewBag.AnimalId = id;
             return View();
         }
@@ -97,9 +106,9 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
+        public async Task<IActionResult> Create([FromRoute] int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
         {
-            
+            // Obter ID do utilizador autenticado
             int idUser;
             idUser = await _context.Utilizador
                 .Where(u => User.Identity.Name == u.Nome)
@@ -109,11 +118,12 @@ namespace PawBuddy.Controllers
             {
                 return NotFound();
             }
+            // Verificar se o ID do animal corresponde
             if (id != doa.AnimalFK)
             {
                 return NotFound();
             }
-
+            // Verificar se o animal existe
             int animal = await _context.Animal.Where(u => u.Id == id)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
@@ -121,20 +131,55 @@ namespace PawBuddy.Controllers
             {
                 return NotFound();
             }
+            
+            // Foi verificado que a BD mete o id do animal como id da doação entao foi foram feitos ajustos para ter chaves unicas
+            // 1. Verifica se o objeto doa tem um ID válido (0 ou null)
+            if (doa.Id <= 0) // Simplifica a verificação (cobre null, 0 e negativos)
+            {
+                // Se não tiver ID válido:
+                // Procura o maior ID existente na tabela Doa de forma segura
+                int maxId = await _context.Doa
+                    .AsNoTracking() // Melhora performance (apenas leitura)
+                    .MaxAsync(d => (int?)d.Id) ?? 0; // Trata tabela vazia
+    
+                // Garante que o novo ID seja único
+                doa.Id = maxId + 1;
+            }
+            else // 2. Se o objeto doa já tem um ID definido
+            {
+                // Verifica se o ID já existe na base de dados
+                bool idExists = await _context.Doa
+                    .AsNoTracking()
+                    .AnyAsync(d => d.Id == doa.Id);
+    
+                // Se o ID já existe, substitui por um novo ID único
+                if (idExists)
+                {
+                    // Busca o próximo ID disponível de forma atômica
+                    int nextAvailableId = await _context.Doa
+                        .AsNoTracking()
+                        .MaxAsync(d => (int?)d.Id) ?? 0;
+        
+                    doa.Id = nextAvailableId + 1;
+        
+                }
+    
+                // Se o ID não existe, mantém o ID fornecido (já é único)
+            }
+            // Converter valor para decimal (formato português)
             doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
                 new CultureInfo("pt-PT"));
             if (ModelState.IsValid)
             {
+                // Preencher dados da doação
                 doa.AnimalFK = animal;
                 doa.UtilizadorFK = idUser;
                 doa.DataD = DateTime.Now;
+                // Guardar na base de dados
                 _context.Add(doa);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", doa.AnimalFK);
-            //ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", doa.UtilizadorFK);
-            
             return View(doa);
         }
 
@@ -151,6 +196,7 @@ namespace PawBuddy.Controllers
                 return NotFound();
             }
 
+            // Obter doação a editar
             var doa = await _context.Doa.FindAsync(id);
             if (doa == null)
             {
@@ -172,8 +218,9 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Valor,DataD,UtilizadorFK,AnimalFK")] Doa doa)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,PrecoAux,DataD,UtilizadorFK,AnimalFK")] Doa doa)
         {
+            // Verificar se o ID corresponde
             if (id != doa.Id)
             {
                 return NotFound();
@@ -189,26 +236,43 @@ namespace PawBuddy.Controllers
                 ModelState.AddModelError("", "Utilizador ou Animal não encontrado.");
                 return View(doa);
             }
+            // Obter doação existente
+            var doacaoExistente= await _context.Doa.FindAsync(id);
+            
+            if (doacaoExistente == null)
+            {
+                return NotFound();
+            }
+            // Converter valor para decimal 
+            doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
+                new CultureInfo("pt-PT"));
+            // Atualiza apenas os campos permitidos
+            
+            // Mostrar erros de validação no console (debug)
+            if (!ModelState.IsValid)
+            {
+                    var erros = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                         // Por exemplo, para debug: 
+                         foreach(var erro in erros)
+                         {
+                             Console.WriteLine(erro); // Ou usa um logger
+                         }
+                         
+            }
+
             
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var doacaoExistente= await _context.Doa.FindAsync(id);
-            
-                    if (doacaoExistente == null)
-                    {
-                        return NotFound();
-                    }
-
-                    // Atualiza apenas os campos permitidos
+                    // Atualizar apenas campos permitidos
                     doacaoExistente.Valor = doa.Valor;
                     
 
                     // Mantém as chaves estrangeiras originais
                     doacaoExistente.UtilizadorFK = doa.UtilizadorFK;
                     doacaoExistente.AnimalFK = doa.AnimalFK;
-
+                    doacaoExistente.DataD = DateTime.Now;
                     _context.Update(doacaoExistente);
                     await _context.SaveChangesAsync();
 
@@ -228,9 +292,11 @@ namespace PawBuddy.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            
+
             ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", doa.AnimalFK);
             ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", doa.UtilizadorFK);
-            return View(doa);
+            return View(doacaoExistente);
         }
         
         /// <summary>
@@ -245,7 +311,7 @@ namespace PawBuddy.Controllers
             {
                 return NotFound();
             }
-
+            // Obter doação com informações relacionadas
             var doa = await _context.Doa
                 .Include(d => d.Animal)
                 .Include(d => d.Utilizador)
@@ -255,6 +321,8 @@ namespace PawBuddy.Controllers
                 return NotFound();
             }
 
+            // Guardar ID em sessão para validação
+            HttpContext.Session.SetInt32("idSessao", doa.Id);
             return View(doa);
         }
 
@@ -270,7 +338,15 @@ namespace PawBuddy.Controllers
         {
             var doa = await _context.Doa.FindAsync(id);
             if (doa != null)
-            {
+            {// vou buscar o id do utilizador da sessão
+                var idSessao = HttpContext.Session.GetInt32("idSessao");
+                // se o id do utilizador da sessão for diferente do que recebemos
+                // quer dizer que está a tentar apagar um utilizador diferente do que tem no ecrã
+                if (idSessao != id)
+                {
+                    return RedirectToAction(nameof(Details));
+                }
+                // Eliminar doação
                 _context.Doa.Remove(doa);
             }
 
