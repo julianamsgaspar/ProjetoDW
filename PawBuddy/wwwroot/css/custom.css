@@ -1,0 +1,50 @@
+﻿/* Estilo para o título da página */
+.page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    color: #0d6efd;
+}
+
+/* Estilo para as tabelas de adoções */
+.table-adocao {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+/* Zebra style */
+.table-adocao tbody tr:nth-child(odd) {
+    background-color: #f8f9fa;
+}
+
+/* Botões de ação */
+.btn-acao {
+    margin-right: 0.25rem;
+    
+}
+
+/* ------------------ Index ------------------- */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+ .icon-helper {
+     font-size: 3rem;
+ }
+
+/* --------------- FIM Index -------------- */

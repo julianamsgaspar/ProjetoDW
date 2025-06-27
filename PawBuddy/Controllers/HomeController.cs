@@ -33,13 +33,21 @@ public class HomeController : Controller
     /// <returns>View da página Index</returns>
     public IActionResult Index()
     {
+        if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+        {
+            return RedirectToAction("Index", "Administrador");
+            // ou "Index", se for essa a action principal
+        }
         var adotados = _context.Intencao
             .Count(i => i.Estado == EstadoAdocao.Concluido);
 
         ViewData["Adotados"] = adotados;
         return View();
     }
-    
+    public IActionResult QuemSomos()
+    {
+        return View();
+    }
     /// <summary>
     /// Ação que retorna a view da página de privacidade.
     /// </summary>
@@ -48,7 +56,6 @@ public class HomeController : Controller
     {
         return View();
     }
-
     /// <summary>
     /// Ação que trata erros e exibe a página de erro.
     /// Esta ação não armazena o cache da resposta.

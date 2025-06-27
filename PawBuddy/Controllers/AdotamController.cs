@@ -15,7 +15,7 @@ namespace PawBuddy.Controllers
     /// Controlador responsável pela gestão das adoções.
     /// Acesso restrito ao perfil "Admin".
     /// </summary>
-    [Authorize(Roles = "Admin")] // Só admin acessa 
+    [Authorize(Roles = "Admin")] // Só admin acede 
     public class AdotamController : Controller
     {
         private readonly ApplicationDbContext _context;

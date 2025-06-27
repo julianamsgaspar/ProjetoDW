@@ -1,0 +1,58 @@
+﻿@model IEnumerable<PawBuddy.Models.IntencaoDeAdocao>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Estado)</th>
+            <th>@Html.DisplayNameFor(m => m.Profissao)</th>
+            <th>@Html.DisplayNameFor(m => m.Residencia)</th>
+            <th>@Html.DisplayNameFor(m => m.Motivo)</th>
+            <th>@Html.DisplayNameFor(m => m.temAnimais)</th>
+            <th>@Html.DisplayNameFor(m => m.quaisAnimais)</th>
+            <th>@Html.DisplayNameFor(m => m.DataIA)</th>
+            <th>@Html.DisplayNameFor(m => m.Utilizador)</th>
+            <th>@Html.DisplayNameFor(m => m.Animal)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Estado</td>
+            <td>@item.Profissao</td>
+            <td>@item.Residencia</td>
+            <td>@item.Motivo</td>
+            <td>@item.temAnimais</td>
+            <td>@item.quaisAnimais</td>
+            <td>@item.DataIA.ToShortDateString()</td>
+            <td>@item.Utilizador?.Nome</td>
+            <td>@item.Animal?.Nome</td>
+            <td>
+                <a asp-action="Edit"    asp-route-id="@item.Id">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                <a asp-action="Delete"  asp-route-id="@item.Id">Eliminar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@* --- Exemplo de “card” (fica aqui também, se quiseres) *@
+<div class="row row-cols-1 row-cols-md-3 g-3">
+@foreach (var item in Model)
+{
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <img src="~/images/example.png" class="card-img-top" alt="..." />
+            <div class="card-body">
+                <h5 class="card-title">@item.Estado</h5>
+                <p class="card-text">@item.Motivo</p>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">
+                    @item.Residencia
+                </a>
+            </div>
+        </div>
+    </div>
+}
+</div>

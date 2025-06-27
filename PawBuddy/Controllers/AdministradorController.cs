@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PawBuddy.Data;
 using PawBuddy.Models;
-
+using Microsoft.AspNetCore.Authorization;
 namespace PawBuddy.Controllers
 {
-    [Route("Administrador")] 
+    
+    [Authorize(Roles = "Admin")] // Só admin acede
+    // [Route("Administrador")] 
     public class AdministradorController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,7 +25,9 @@ namespace PawBuddy.Controllers
             _roleManager = roleManager;
             _context = context;
         }
-        
+        [HttpGet]
+        public IActionResult Index() => View();
+
         /// <summary>
         /// Lista todos os utilizadores com a role "Administrador".
         /// </summary>

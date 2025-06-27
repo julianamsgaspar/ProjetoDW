@@ -18,13 +18,13 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Registrar o serviço em segundo plano
 builder.Services.AddHostedService<AdocaoBackgroundService>();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => {
-    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedAccount = true;
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8;
 })
 .AddRoles<IdentityRole>()
-.AddEntityFrameworkStores<ApplicationDbContext>();
 
+.AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(10);
@@ -32,6 +32,13 @@ builder.Services.AddSession(options => {
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("NaoAdmin", policy =>
+        policy.RequireAuthenticatedUser()
+            .RequireAssertion(context => !context.User.IsInRole("Admin"))
+    );
+});
 
 var app = builder.Build();
 
@@ -87,6 +94,13 @@ using (var scope = app.Services.CreateScope()) {
         logger.LogError(ex, "Erro ao inicializar roles");
     }
 }
+//Ativa a confirmação de email no Program.cs
+/*builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true; //obriga confirmação
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+});*/
 
 // Rotas
 app.MapControllerRoute(

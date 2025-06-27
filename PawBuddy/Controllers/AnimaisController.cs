@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ namespace PawBuddy.Controllers
     /// Permite visualizar, adicionar, editar e remover animais.
     /// Também lida com o upload e validação de imagens.
     /// </summary>
+    // ---------- TUDO neste controller exige Admin ----------
+    [Authorize(Roles = "Admin")]
     public class AnimaisController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -27,12 +30,30 @@ namespace PawBuddy.Controllers
         {
             _context = context;
         }
-    
+        public async Task<IActionResult> IndexPartial(string searchNome, string especie, string genero)
+        {
+            var animais = _context.Animal.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchNome))
+                animais = animais.Where(a => a.Nome.Contains(searchNome));
+
+            if (!string.IsNullOrEmpty(especie))
+                animais = animais.Where(a => a.Especie == especie);
+
+            if (!string.IsNullOrEmpty(genero))
+                animais = animais.Where(a => a.Genero == genero);
+
+            var listaAnimais = await animais.ToListAsync();
+
+            return PartialView("_IndexPartial", listaAnimais);
+        }
+
         /// <summary>
         /// Lista todos os animais cadastrados.
         /// </summary>
         /// <returns>Vista com a lista de animais.</returns>
         // GET: Animais
+        [AllowAnonymous]  
         public async Task<IActionResult> Index(string searchNome, string especie, string genero)
         {
             var animais = _context.Animal.AsQueryable();
@@ -58,8 +79,12 @@ namespace PawBuddy.Controllers
         /// <param name="id">ID do animal.</param>
         /// <returns>Vista de detalhes ou NotFound.</returns>
         // GET: Animais/Details/5
+        
+        [AllowAnonymous]  
+        
         public async Task<IActionResult> Details(int? id)
         {
+            
             if (id == null)
             {
                 return NotFound();
@@ -192,6 +217,7 @@ namespace PawBuddy.Controllers
         /// <param name="id">ID do animal.</param>
         /// <returns>Vista de edição ou NotFound.</returns>
         // GET: Animais/Edit/5
+       
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)

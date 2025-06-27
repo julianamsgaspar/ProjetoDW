@@ -16,7 +16,7 @@ namespace PawBuddy.Controllers
     /// Controlador responsável por gerir as intenções de adoção submetidas pelos utilizadores.
     /// Acesso restrito a utilizadores com o papel de "Admin".
     /// </summary>
-    [Authorize(Roles = "Admin")] 
+    [Authorize] 
 
     public class IntencaoDeAdocaoController : Controller
     
@@ -27,7 +27,17 @@ namespace PawBuddy.Controllers
         {
             _context = context;
         }
-        
+        [AllowAnonymous]                    // ou mantém restrito
+        public async Task<IActionResult> IndexPartial()
+        {
+            var lista = await _context.Intencao
+                .Include(i => i.Utilizador)
+                .Include(i => i.Animal)
+                .ToListAsync();
+
+            return PartialView("_IndexPartial", lista);
+        }
+
         /// <summary>
         /// Lista todas as intenções de adoção existentes.
         /// </summary>
@@ -71,6 +81,7 @@ namespace PawBuddy.Controllers
 
         // [Route("Create/{id}")]
         [HttpGet]
+        [Authorize(Policy = "NaoAdmin")]
         public async Task<IActionResult> Create( int id)
         {
             if (id == 0 || id == null)
@@ -93,6 +104,7 @@ namespace PawBuddy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "NaoAdmin")]
         public async Task<IActionResult> Create( int id, [Bind("Estado,temAnimais, quaisAnimais,Profissao,Residencia,Motivo,DataIA,AnimalFK")] IntencaoDeAdocao intencaoDeAdocao)
         {
             int idUser;

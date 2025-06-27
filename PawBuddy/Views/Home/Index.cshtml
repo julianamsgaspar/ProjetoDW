@@ -10,18 +10,20 @@
 <!-- Secção de boas-vindas -->
 <div class="container py-5 fade-in">
     <div class="text-center mb-5">
-        <h1 class="display-4 text-uppercase">Bem-vindo ao <span class="text-primary text-uppercase">PawBuddy</span>!</h1>
-        <p class="lead">Encontre o seu novo melhor amigo entre dezenas de animais que aguardam por um lar cheio de amor.</p>
+        <h1 class="display-4 text-uppercase">Bem-vindo ao <span class="text-uppercase fw-bold" style="color:#9c9dcc ">PawBuddy </span>!</h1>
+        <p class="fw-normal">Encontre o seu novo melhor amigo entre dezenas de animais que aguardam por um lar cheio de amor.</p>
 
         <!-- Botão para ver os animais disponíveis -->
-        <a class="btn btn-outline-info btn-lg mt-3" href="/Animais" aria-label="Ver todos os animais disponíveis">
-            <i class="bi bi-paw-fill me-2"></i> Ver todos os animais
+        <a class="btn btn-outline-info btn-lg mt-3" href="/Animais" aria-label="Ver todos os animais disponíveis">Ver todos os animais
         </a>
     </div>
     <div class="text-center my-4">
         <h3 class="text-uppercase font-italic text-secondary">
-            🐾 @ViewData["Adotados"] patudos já encontraram o seu doce lar 💕
+            <i class="bi bi-paw-fill me-2 text-primary"></i>
+            @ViewData["Adotados"] patudos já encontraram o seu doce lar
+            <i class="bi bi-heart-fill ms-2 text-danger"></i>
         </h3>
+
     </div>
 </div>
 
@@ -54,15 +56,5 @@
                 <p>Doe o seu tempo! Ajude-nos a divulgar os nossos animais nas redes.</p>
             </div>
         </div>
-
-        @* 
-        <!-- Secção de IBAN para doações financeiras -->
-        <div class="text-center mt-5">
-            <p class="mb-2">💳 Apoie com transferência bancária:</p>
-            <div class="bg-white border rounded p-3 d-inline-block shadow-sm">
-                <strong>IBAN:</strong> PT50 0002 0123 5678 9015 4321 6
-            </div>
-        </div> 
-        *@
     </div>
 </section>

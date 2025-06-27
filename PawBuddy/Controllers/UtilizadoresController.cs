@@ -15,7 +15,7 @@ namespace PawBuddy.Controllers
     /// Controller responsável pela gestão dos Utilizadores.
     /// Apenas acessível a utilizadores com o perfil de Admin.
     /// </summary>
-    [Authorize(Roles = "Admin")] 
+    [Authorize(Roles = "Admin")] // Só admin acede 
     public class UtilizadoresController : Controller
     {
         private readonly ApplicationDbContext _context;

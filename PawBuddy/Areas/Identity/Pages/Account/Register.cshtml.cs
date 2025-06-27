@@ -78,112 +78,112 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-{
-    _logger.LogInformation("Iniciando processo de registro..."); // <-- NOVO
-    
-    if (!ModelState.IsValid)
-    {
-        _logger.LogWarning("ModelState inválido. Erros: " + 
-                           string.Join(", ", ModelState.Values
-                               .SelectMany(v => v.Errors)
-                               .Select(e => e.ErrorMessage))); // <-- NOVO
-        return Page();
-    }
-    returnUrl ??= Url.Content("~/");
-    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
-    if (!ModelState.IsValid) return Page();
-
-    await using var transaction = await _context.Database.BeginTransactionAsync();
-    
-    try
-    {
-        var user = CreateUser();
-        // 1. Verificar se o email já existe
-        var existingUser = await _userManager.FindByEmailAsync(Input.Utilizador.Email);
-        if (existingUser != null)
+            public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            ModelState.AddModelError("Input.Utilizador.Email", "Este email já está registado.");
+        _logger.LogInformation("Iniciando processo de registro..."); // <-- NOVO
+        
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("ModelState inválido. Erros: " + 
+                               string.Join(", ", ModelState.Values
+                                   .SelectMany(v => v.Errors)
+                                   .Select(e => e.ErrorMessage))); // <-- NOVO
             return Page();
         }
-        
-        // 2. Verificar se o username é igual ao email
-        if (Input.Utilizador.Email.Equals(Input.Utilizador.Nome, StringComparison.OrdinalIgnoreCase))
-        {
-            ModelState.AddModelError("Input.Utilizador.Nome", "O Nome não pode ser igual ao email.");
-            return Page();
-        }
-        
-        // 3. Verificar se o username já existe
-        var existingUserByName = await _userManager.FindByNameAsync(Input.Utilizador.Nome);
-        if (existingUserByName != null)
-        {
-            ModelState.AddModelError("Input.Utilizador.Nome", "Este Nome já está em uso.");
-            return Page();
-        }
-        if (Input.Utilizador.Nome.Contains("@"))
-        {
-            ModelState.AddModelError("Input.Utilizador.Nome", "O Nome não pode conter '@'.");
-            return Page();
-        }
-        
-        await _userStore.SetUserNameAsync(user, Input.Utilizador.Nome, CancellationToken.None);
-        await _emailStore.SetEmailAsync(user, Input.Utilizador.Email, CancellationToken.None);
-        
-        var result = await _userManager.CreateAsync(user, Input.Password);
+        returnUrl ??= Url.Content("~/");
+        ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-        if (result.Succeeded)
+        if (!ModelState.IsValid) return Page();
+
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        
+        try
         {
-            // Preenche e guarda os dados do utilizador
-            Input.Utilizador.IdentityUserId = user.Id;
-            Input.Utilizador.Email = user.Email;
-            _context.Utilizador.Add(Input.Utilizador);
-            
-            // Atribui role de Cliente
-            await _userManager.AddToRoleAsync(user, "Cliente");
-            
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            _logger.LogInformation("Utilizador criado com sucesso.");
-
-            // Código de confirmação de email (existente)
-            if (_userManager.Options.SignIn.RequireConfirmedAccount)
+            var user = CreateUser();
+            // 1. Verificar se o email já existe
+            var existingUser = await _userManager.FindByEmailAsync(Input.Utilizador.Email);
+            if (existingUser != null)
             {
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { area = "Identity", userId, code, returnUrl },
-                    protocol: Request.Scheme);
+                ModelState.AddModelError("Input.Utilizador.Email", "Este email já está registado.");
+                return Page();
+            }
+            
+            // 2. Verificar se o username é igual ao email
+            if (Input.Utilizador.Email.Equals(Input.Utilizador.Nome, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError("Input.Utilizador.Nome", "O Nome não pode ser igual ao email.");
+                return Page();
+            }
+            
+            // 3. Verificar se o username já existe
+            var existingUserByName = await _userManager.FindByNameAsync(Input.Utilizador.Nome);
+            if (existingUserByName != null)
+            {
+                ModelState.AddModelError("Input.Utilizador.Nome", "Este Nome já está em uso.");
+                return Page();
+            }
+            if (Input.Utilizador.Nome.Contains("@"))
+            {
+                ModelState.AddModelError("Input.Utilizador.Nome", "O Nome não pode conter '@'.");
+                return Page();
+            }
+            
+            await _userStore.SetUserNameAsync(user, Input.Utilizador.Nome, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, Input.Utilizador.Email, CancellationToken.None);
+            
+            var result = await _userManager.CreateAsync(user, Input.Password);
 
-                await _emailSender.SendEmailAsync(Input.Utilizador.Email, "Confirmação de Email",
-                    $"Por favor confirme a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
+            if (result.Succeeded)
+            {
+                // Preenche e guarda os dados do utilizador
+                Input.Utilizador.IdentityUserId = user.Id;
+                Input.Utilizador.Email = user.Email;
+                _context.Utilizador.Add(Input.Utilizador);
+                
+                // Atribui role de Cliente
+                await _userManager.AddToRoleAsync(user, "Cliente");
+                
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-                return RedirectToPage("RegisterConfirmation", new { email = Input.Utilizador.Email, returnUrl });
+                _logger.LogInformation("Utilizador criado com sucesso.");
+
+                // Código de confirmação de email (existente)
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId, code, returnUrl },
+                        protocol: Request.Scheme);
+
+                    await _emailSender.SendEmailAsync(Input.Utilizador.Email, "Confirmação de Email",
+                        $"Por favor confirme a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
+
+                    return RedirectToPage("RegisterConfirmation", new { email = Input.Utilizador.Email, returnUrl });
+                }
+
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl);
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return LocalRedirect(returnUrl);
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
-
-        foreach (var error in result.Errors)
+        catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, error.Description);
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Erro durante o registo");
+            ModelState.AddModelError(string.Empty, "Ocorreu um erro durante o registo.");
         }
-    }
-    catch (Exception ex)
-    {
-        await transaction.RollbackAsync();
-        _logger.LogError(ex, "Erro durante o registo");
-        ModelState.AddModelError(string.Empty, "Ocorreu um erro durante o registo.");
-    }
 
-    return Page();
-}
+        return Page();
+    }
 
         private IdentityUser CreateUser()
         {
