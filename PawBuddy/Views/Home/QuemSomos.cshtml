@@ -1,0 +1,110 @@
+﻿@{
+    // Define o título da página como "Quem Somos"
+    ViewData["Title"] = "Quem Somos";
+}
+
+<div class="container py-5" style="background-color: #f0f0f0; border-radius: 40px">
+    <!-- Container principal com padding vertical e fundo cinza claro com cantos arredondados -->
+
+    <h2 class="mb-4 text-center titulo-estilizado">@ViewData["Title"]</h2>
+    <!-- Título da secção, centralizado, com margem em baixo e estilo personalizado -->
+
+    <div class="container">
+        <!-- Container interno para organização do conteúdo -->
+
+        <div class="row mb-5 ">
+            <!-- Linha Bootstrap com margem inferior para separar do resto -->
+
+            <div class="col-lg-6">
+                <!-- Coluna para texto, ocupa metade da largura em ecrãs grandes -->
+
+                <p>
+                    <!-- Primeiro parágrafo que explica a origem da PawBuddy -->
+                    A <strong>PawBuddy</strong> nasceu em 2021, fruto da amizade de duas jovens apaixonadas por animais. Durante os tempos difíceis da pandemia, percebemos o papel essencial que os nossos companheiros de quatro patas tiveram no nosso bem-estar emocional.
+                </p>
+                <p>
+                    <!-- Segundo parágrafo sobre o propósito do projeto -->
+                    Decidimos transformar essa gratidão num projeto com propósito: facilitar e humanizar o processo de adoção animal. O que começou como uma ideia entre amigas tornou-se numa plataforma desenvolvida com dedicação, tecnologia e, acima de tudo, <em>coração</em>.
+                </p>
+                <p>
+                    <!-- Terceiro parágrafo sobre a missão atual da PawBuddy -->
+                    Hoje, a PawBuddy liga cuidadores, abriga histórias e dá segundas oportunidades — tanto aos animais como às pessoas que os acolhem.
+                </p>
+            </div>
+
+            <div class="col-lg-6">
+                <!-- Coluna para o carousel de imagens, também metade da largura em ecrãs grandes -->
+
+                <div id="carouselQuemSomos" class="carousel slide d-block w-75 mx-auto" data-bs-ride="carousel" style="background-color: #a4c4e4">
+                    <!-- Carousel Bootstrap -->
+
+                    <div class="carousel-inner rounded shadow">
+                        <!-- Conteúdo do carousel com cantos arredondados e sombra -->
+
+                        <div class="carousel-item active">
+                            <!-- Primeiro item do carousel, ativo por defeito -->
+                            <img src="~/Imgs/1.jpg" class="d-block w-75 mx-auto" alt="Imagem1">
+                        </div>
+
+                        <!-- Os próximos blocos são outros items do carousel, só um está ativo -->
+                        <div class="carousel-item">
+                            <img src="~/Imgs/3.jpg" class="d-block w-75 mx-auto" alt="Imagem3">
+                        </div>
+
+                        <div class="carousel-item">
+                            <img src="~/Imgs/5.jpg" class="d-block w-75 mx-auto" alt="Imagem5">
+                        </div>
+
+                        <div class="carousel-item">
+                            <img src="~/Imgs/6.jpg" class="d-block w-75 mx-auto" alt="Imagem6">
+                        </div>
+
+                        <div class="carousel-item">
+                            <img src="~/Imgs/8.jpg" class="d-block w-75 mx-auto" alt="Imagem8">
+                        </div>
+
+                        <div class="carousel-item">
+                            <img src="~/Imgs/2.jpg" class="d-block w-75 mx-auto" alt="Imagem2">
+                        </div>
+
+                        <div class="carousel-item">
+                            <img src="~/Imgs/9.jpg" class="d-block w-75 mx-auto" alt="Imagem9">
+                        </div>
+                    </div>
+
+                    <!-- Botões para navegar para o slide anterior e seguinte -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselQuemSomos" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselQuemSomos" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Seguinte</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row text-center mb-4">
+            <!-- Linha para o bloco de citação, centralizada -->
+
+            <div class="col-lg-8 offset-lg-2">
+                <!-- Coluna centralizada (offset) com 8/12 da largura em grandes ecrãs -->
+
+                <blockquote class="blockquote fs-5 fst-italic text-muted">
+                    <!-- Citação estilizada com tamanho de fonte, itálico e cor cinza -->
+                    <p>
+                        "Criar a PawBuddy foi mais do que um projeto académico. Foi um reflexo do nosso amor pelos animais e do nosso desejo de fazer a diferença. Cada adoção é uma vitória, cada história é uma inspiração — e saber que contribuímos para isso enche-nos de orgulho e gratidão."
+                    </p>
+                </blockquote>
+
+                <footer class="blockquote-footer mt-3">
+                    <!-- Rodapé da citação com o nome das fundadoras -->
+                    <strong>Inês e Juliana</strong>, as fundadoras
+                </footer>
+            </div>
+        </div>
+    </div>
+
+</div>

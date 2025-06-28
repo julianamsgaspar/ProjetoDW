@@ -1,13 +1,37 @@
 <div class="container mt-4">
-    <h5>Bem-vindo, @User.Identity.Name!</h5>
-
     <h4 class="mt-3">Menu de Gestão</h4>
     <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-primary" asp-area="" asp-controller="Animais" asp-action="Index">Animais</a>
-        <a class="btn btn-primary" asp-area="" asp-controller="Utilizadores" asp-action="Index">Gestão de Utilizadores</a>
-        <a class="btn btn-primary" asp-area="" asp-controller="Administrador" asp-action="ListaAdmin">Gestão de Administradores</a>
-        <a class="btn btn-primary" asp-area="" asp-controller="IntencaoDeAdocao" asp-action="Index">Gestão de Adoções</a>
-        <a class="btn btn-primary" asp-area="" asp-controller="Adotam" asp-action="Index">Adoções Finais</a>
-        <a class="btn btn-primary" asp-area="" asp-controller="Doa" asp-action="Index">Gestão de Doações</a>
+        <a href="#" class="menu-link btn btn-primary" data-url="/Animais/IndexPartial">Gerir Animais</a>
+        <a href="#" class="menu-link btn btn-primary" data-url="/IntencaoDeAdocao/IndexPartial">Gerir Intenções de Adoção</a>
+        <a href="#" class="menu-link btn btn-primary" data-url="/Adotam/IndexPartial">Adoções Finalizadas</a>
+        <a href="#" class="menu-link btn btn-primary" data-url="/Administrador/ListaAdminPartial">Gerir Admins</a>
+        <a href="#" class="menu-link btn btn-primary" data-url="/Doa/IndexPartial">Doações</a>
+        <a href="#" class="menu-link btn btn-primary" data-url="/Utilizadores/IndexPartial">Gerir Utilizadores</a>
+    </div>
+
+    <div id="conteudo" class="mt-4">
+        <!-- Conteúdo carregado aqui -->
     </div>
 </div>
+
+<!-- JQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Script para carregar partials -->
+<script>
+    function carregarParcial(url) {
+        $('#conteudo').load(url);
+    }
+
+    $(document).ready(function () {
+        // Carrega a primeira secção (Animais) por defeito
+        carregarParcial('/Animais/IndexPartial');
+
+        // Liga todos os botões do menu
+        $('.menu-link').on('click', function (e) {
+            e.preventDefault(); // Evita o reload da página
+            const url = $(this).data('url');
+            carregarParcial(url);
+        });
+    });
+</script>

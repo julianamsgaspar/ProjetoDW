@@ -14,7 +14,7 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 // Configuração existente (mantida igual)
 var connectionString = builder.Configuration.GetConnectionString("ConStringMySQL") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(  //sqlserver
+    options.UseMySql(
         builder.Configuration.GetConnectionString("ConStringMySQL"),
         new MySqlServerVersion(new Version(8, 0, 39))
     ));
@@ -60,6 +60,13 @@ builder.Services.AddSwaggerGen(
     
     );
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("NaoAdmin", policy =>
+        policy.RequireAuthenticatedUser()
+            .RequireAssertion(context => !context.User.IsInRole("Admin"))
+    );
+});
 
 var app = builder.Build();
 
@@ -120,6 +127,13 @@ using (var scope = app.Services.CreateScope()) {
         logger.LogError(ex, "Erro ao inicializar roles");
     }
 }
+//Ativa a confirmação de email no Program.cs
+/*builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true; //obriga confirmação
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+});*/
 
 // Rotas
 app.MapControllerRoute(
@@ -128,4 +142,3 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
-

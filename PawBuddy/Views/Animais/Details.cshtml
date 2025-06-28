@@ -1,70 +1,94 @@
 @model PawBuddy.Models.Animal
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Animal";
 }
 
-<h1>Detalhes</h1>
+<div class="container my-5">
+    <div class="card shadow rounded-4 border-0">
+        <div class="card-header bg-gradient-primary text-white rounded-top-4">
+            <h2 class="mb-0">@Model.Nome</h2>
+            <small class="text-light fst-italic">@Model.Especie - @Model.Raca</small>
+        </div>
+        <div class="card-body">
+            <div class="row gy-4">
+                <!-- Imagem -->
+                <div class="col-md-5 d-flex justify-content-center align-items-center">
+                    @if (!string.IsNullOrEmpty(Model.Imagem) && Model.Imagem != "example.png")
+                    {
+                        <img src="@Url.Content(Model.Imagem)" alt="Imagem do Animal" class="img-fluid rounded shadow-sm" style="max-height: 300px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column justify-content-center align-items-center text-muted">
+                            <i class="bi bi-image" style="font-size: 4rem;"></i>
+                            <small>Imagem não disponível</small>
+                        </div>
+                    }
+                </div>
 
-<div>
-    <h4>Animal</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Raca)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Raca)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Idade)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Idade)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Genero)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Genero)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Especie)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Especie)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cor)
-        </dd>
-        <!-- Adicionando uma linha de texto para o caminho da imagem -->
-        <dt class="col-sm-2">
-            <p>Imagem</p>
-        </dt>
-        <dd class="col-sm-10">
-            @if (!string.IsNullOrEmpty(Model.Imagem) && Model.Imagem != "example.png")
+                <!-- Dados do animal -->
+                <div class="col-md-7">
+                    <dl class="row">
+                        <dt class="col-sm-4 text-secondary fw-semibold">Idade</dt>
+                        <dd class="col-sm-8 fs-5">@Model.Idade anos</dd>
+
+                        <dt class="col-sm-4 text-secondary fw-semibold">Gênero</dt>
+                        <dd class="col-sm-8 fs-5">@Model.Genero</dd>
+
+                        <dt class="col-sm-4 text-secondary fw-semibold">Cor</dt>
+                        <dd class="col-sm-8 fs-5">@Model.Cor</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mt-3">
+            <div class="alert alert-warning text-center fw-semibold fs-5">
+                Cada animal merece um lar cheio de carinho. Se te apaixonaste pelo(a) <strong>@Model.Nome</strong>, <em>por que não dar o próximo passo?</em> 🏡💙
+            </div>
+            @if (!User.Identity.IsAuthenticated)
             {
-                <!-- Exibe a imagem -->
-                <img src="@Url.Content(Model.Imagem)" alt="Imagem do Animal" class="img-fluid" style="max-width: 150px;"/>
-                <p>Caminho da imagem : @Model.Imagem</p> <!-- Exibe o caminho da imagem -->
+                <p class="text-center text-muted fst-italic mt-2">
+                    Regista-te ou inicia sessão para poderes avançar com a adoção.
+                </p>
             }
-            else
+        </div>
+    
+        <div class="card-footer d-flex justify-content-between align-items-center bg-light rounded-bottom-4">
+            @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
             {
-                <p>Imagem padrão não definida.</p>
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-warning btn-lg shadow-sm">
+                    <i class="bi bi-pencil-square me-2"></i> Editar
+                </a>
             }
-        </dd>
-    </dl>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-lg shadow-sm">
+                <i class="bi bi-arrow-left me-2"></i> Voltar
+            </a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
-    <a asp-action="Index">Voltar</a>
-</div>
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #6f42c1, #6610f2);
+    }
+
+    dt {
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-outline-warning:hover {
+        background-color: #6610f2;
+        color: #fff;
+        border-color: #6610f2;
+        transition: 0.3s;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #adb5bd;
+        color: #212529;
+        border-color: #adb5bd;
+        transition: 0.3s;
+    }
+</style>

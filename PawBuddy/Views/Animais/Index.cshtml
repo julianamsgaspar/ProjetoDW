@@ -1,13 +1,29 @@
+@using Azure.Core
 @model IEnumerable<PawBuddy.Models.Animal>
+@{
+    int currentPage = ViewData["CurrentPage"] as int? ?? 1;
+    int totalPages = ViewData["TotalPages"] as int? ?? 1;
+    string currentFilter = ViewData["CurrentFilter"] as string ?? "";
+    string currentEspecie = ViewData["CurrentEspecie"] as string ?? "";
+    string currentGenero = ViewData["CurrentGenero"] as string ?? "";
+}
 
 @{
     ViewData["Title"] = "Index";
 }
+<div id="conteudo">
+    @* Só carrega a partial no fallback se o utilizador for admin *@
+    @if (User.IsInRole("Admin"))
+    {
+        @await Html.PartialAsync("_IndexPartial", Model)
+    }
+</div>
 
+<body>
 <!-- Título e introdução -->
 <div class="text-center my-4">
-    <h1 class="display-5 text-primary">🐾 Animais Disponíveis para Adoção</h1>
-    <p class="lead">Conheça os nossos patudos que estão à espera de um lar cheio de carinho!</p>
+    <h1 class="display-5 text-primary">Animais Disponíveis para Adoção</h1>
+    <p class="lead">Conheça os nossos patudos que desejam um lar cheio de carinho!</p>
 </div>
 
 @* Botão de criar novo animal - visível apenas para administradores *@
@@ -55,106 +71,98 @@
         {
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    @* Imagem do animal com ajuste de proporção *@
-                    <img src="@item.Imagem" class="card-img-top" alt="Imagem de @item.Nome" style="object-fit: cover; height: 250px;">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Nome</h5>
-                        <p class="card-text">
-                            <strong>Raça:</strong> @item.Raca<br/>
-                            <strong>Idade:</strong> @item.Idade<br/>
-                            <strong>Género:</strong> @item.Genero<br/>
-                            <strong>Espécie:</strong> @item.Especie<br/>
-                            <strong>Cor:</strong> @item.Cor
-                        </p>
+                    <img src="@item.Imagem" class="card-img-top" alt="Imagem de @item.Nome" style="object-fit: cover; height: 250px;" />
+
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <h5 class="card-title text-center w-100">@item.Nome</h5>
+
+                        <div class="d-flex justify-content-center align-items-center gap-3 w-100">
+
+                            <button type="button" class="btn btn-outline-primary btn-sm animal-popover"
+                                    data-bs-toggle="popover"
+                                    data-bs-html="true"
+                                    data-bs-trigger="hover focus"
+                                    data-bs-content="
+                                        <strong>Raça:</strong> @item.Raca<br/>
+                                        <strong>Idade:</strong> @item.Idade anos<br/>
+                                        <strong>Género:</strong> @item.Genero
+                                    ">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
-                    @* Botões de ação: detalhes, adoção e (se for admin) editar/apagar *@
+
                     <div class="card-footer d-flex justify-content-between">
                         <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@item.Id">
-                            <i class="bi bi-eye-fill"></i> Detalhes
+                            <i class="bi bi-file-earmark-text"></i> Ver ficha completa
                         </a>
-                        <a class="btn btn-sm btn-success" asp-controller="IntencaoDeAdocao" asp-action="Create" asp-route-id="@item.Id">
-                            <i class="bi bi-house-heart-fill"></i> Adotar
-                        </a>
-
-                        @if (User.IsInRole("Admin"))
+                        @if (User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
+                        {
+                            <a class="btn btn-sm btn-success" asp-controller="IntencaoDeAdocao" asp-action="Create" asp-route-id="@item.Id">
+                                <i class="bi bi-house-heart-fill"></i> Adotar
+                            </a>
+                        }
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                         {
                             <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
                             <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
                         }
-
                     </div>
                 </div>
             </div>
         }
     </div>
 </div>
+@if ((int)ViewData["TotalPages"] > 1)
+{
+    <nav aria-label="Paginação" class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= (int)ViewData["TotalPages"]; i++)
+            {
+                <li class="page-item @(i == (int)ViewData["CurrentPage"] ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-searchNome="@ViewData["CurrentFilter"]"
+                       asp-route-especie="@ViewData["CurrentEspecie"]"
+                       asp-route-genero="@ViewData["CurrentGenero"]">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
 
-@* 
-<p>
-    <a asp-action="Create">Criar Novo</a>
-</p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Raca)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Idade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Genero)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Especie)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Imagem)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Raca)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Idade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Genero)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Especie)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cor)
-            </td>
-            <td>
-                <img src="@item.Imagem" alt="Imagem de @item.Nome" width="100" height="100" />
-            </td>
-
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Apagar</a> |
-                <a asp-controller="IntencaoDeAdocao" asp-action="Create" asp-route-id="@item.Id"> Adotar</a> |
-                <a asp-controller="Doa" asp-action="Create" asp-route-id="@item.Id"> Doar</a> 
-            </td>
-        </tr>
 }
-    </tbody>
-</table>
-*@
+
+</body>
+
+@section Scripts {
+    <script>
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('.animal-popover'));
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl);
+        });
+    </script>
+}
+
+<style>
+    .preview-box {
+        display: none;
+        position: absolute;
+        top: 110%;
+        left: 0;
+        background-color: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 999;
+        width: 220px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+
+    .preview-container:hover .preview-box {
+        display: block;
+    }
+</style>

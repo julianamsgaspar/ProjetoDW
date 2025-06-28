@@ -1,83 +1,196 @@
 ﻿<!DOCTYPE html>
+<!-- Define o tipo de documento HTML5 -->
 <html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - PawBuddy</title>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <!-- <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" /> -->
-    <link rel="stylesheet" href="~/PawBuddy.styles.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cosmo/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<!-- Início do documento HTML, idioma definido como inglês -->
 
+<head>
+    <!-- Cabeçalho do documento -->
+    @RenderSection("Styles", required: false)
+    
+    <meta charset="utf-8"/>
+    <!-- Define a codificação de caracteres como UTF-8 -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- Configura o viewport para ser responsivo em dispositivos móveis -->
+
+    <title>@ViewData["Title"] - PawBuddy</title>
+    <!-- Título da página, com Razor para definir dinamicamente -->
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <!-- Link para ficheiro CSS principal do site, com versão para cache busting -->
+
+    <!-- <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" /> -->
+    <!-- Exemplo comentado de CSS customizado adicional -->
+
+    <link rel="stylesheet" href="~/PawBuddy.styles.css" asp-append-version="true"/>
+    <!-- Outro CSS específico do projeto -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cosmo/bootstrap.min.css">
+    <!-- Tema Bootstrap Cosmo via CDN para estilos base -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome para ícones variados -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- Bootstrap Icons para ícones adicionais -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Atma:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fonte Google Fonts personalizada usada no site -->
 </head>
+
 <body>
+<!-- Corpo do documento -->
+
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <!-- Cabeçalho do site -->
+
+    <div class="text-center py-3" style="background-color: #aba4eb;">
+        <!-- Div centralizada com padding vertical e fundo roxo claro -->
+        <img src="~/Imgs/logo.png" alt="PawBuddy Logo" style="height: 110px;">
+        <!-- Imagem do logo, com altura definida -->
+    </div>
+
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3" style="background-color: #aba4eb">
+        <!-- Navbar responsiva do Bootstrap, expandida para sm, fundo roxo -->
+
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PawBuddy</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Container fluido para espaçamento interno -->
+
+            <!-- Botão para toggle em dispositivos móveis -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <!-- Botão que controla o menu colapsável -->
                 <span class="navbar-toggler-icon"></span>
+                <!-- Ícone padrão do toggle do Bootstrap -->
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">Página Inicial</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" asp-area="" asp-controller="Home" asp-action="Privacy">Privacidade</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" asp-area="" asp-controller="Animais" asp-action="Index">Animais</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" asp-area="" asp-controller="Utilizadores" asp-action="Index">Criar Utilizador</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" asp-area="" asp-controller="IntencaoDeAdocao" asp-action="Index">Adoção</a>
-                    </li>
+
+            <!-- Conteúdo do menu (links) que colapsa em mobile -->
+            <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
+                <!-- Div que colapsa/expande com conteúdo do menu -->
+
+                <ul class="navbar-nav align-items-center gap-3">
+                    <!-- Lista de navegação, alinhada verticalmente ao centro, com espaçamento entre itens -->
+
+                    @* gap = espaço entre itens *@
+                    <!-- Comentário Razor explicando gap -->
+
+                    @* LINKS PÚBLICOS *@
+                    <!-- Condição: se o utilizador NÃO for Admin, mostra estes links -->
+                    @if (!User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <!-- Item do menu -->
+                            <a class="nav-link fw-semibold @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+                               style="color: #ffffff"
+                               asp-controller="Home" asp-action="Index">Início</a>
+                            <!-- Link para página inicial, com classe "active" se estiver nessa rota -->
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "QuemSomos" ? "active" : "")"
+                               style="color: #ffffff"
+                               asp-controller="Home" asp-action="QuemSomos">Quem Somos</a>
+                            <!-- Link para página "Quem Somos" -->
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold @(ViewContext.RouteData.Values["controller"]?.ToString() == "Animais" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+                               style="color: #ffffff"
+                               asp-controller="Animais" asp-action="Index">Animais para Adoção</a>
+                            <!-- Link para página de animais para adoção -->
+                        </li>
+                    }
+
+                    @* LINK DE ADMIN (se autenticado e admin) *@
+                    <!-- Se o utilizador estiver autenticado e for Admin -->
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold text-white" asp-controller="Administrador" asp-action="Index">
+                                Painel de Administrador
+                            </a>
+                            <!-- Link para painel de administrador -->
+                        </li>
+                    }
+
+                    @* BLOCO LOGIN / REGISTO – vem do partial *@
+                    <partial name="_LoginPartial"/>
+                    <!-- Partial view para login/registo, já inclui sua própria lista -->
                 </ul>
-                <partial name="_LoginPartial"/>
             </div>
         </div>
     </nav>
 </header>
+
 <div class="container">
+    <!-- Container Bootstrap para centralizar conteúdo e limitar largura -->
+
     <main role="main" class="pb-3">
+        <!-- Conteúdo principal da página com padding bottom -->
+
         @RenderBody()
+        <!-- Aqui é renderizado o conteúdo específico da view -->
     </main>
 </div>
 
-<footer class="bg-dark text-light pt-5 pb-3 mt-5">
+<footer class="text-light pt-5 pb-3 mt-5" style="background-color: #aba4eb">
+    <!-- Rodapé com texto claro, espaçamentos e fundo roxo -->
+
     <div class="container">
-        <div class="row text-center text-md-start ">
+        <!-- Container para conteúdo do footer -->
+
+        <div class="row text-center text-md-start text-white">
+            <!-- Linha Bootstrap: texto centrado no mobile, alinhado à esquerda a partir de md -->
+
             <!-- Coluna 1: Sobre -->
-            <div class="col-md-4 mb-4">
-                <h5 class="text-info">🐾 Paw Buddy</h5>
-                <p class="small">
-                    Ajudamos cães e gatos a encontrar lares cheios de amor. 💙
-                </p>
+            <div class="col-md-4 mb-4 text-center">
+                <!-- Coluna com 4/12 de largura em md+, margin bottom, texto centrado -->
+                <h5 class="text-info fw-bold">Paw Buddy</h5>
+                <i id="pawIcon" class="fas fa-paw text-white display-4"></i>
+                <!-- Ícone de pata (FontAwesome), grande, branco, com id para interatividade -->
             </div>
 
             <!-- Coluna 2: Links úteis -->
-            <div class="col-md-4 mb-4">
-                <h6 class="text-info ">Links úteis</h6>
+            <div class="col-md-4 mb-4 text-center">
+                <h6 class="text-info fw-bold">Links úteis</h6>
                 <ul class="list-unstyled small">
-                    <li><a href="/Animais" class="text-light text-decoration-none">🐶 Ver Animais</a></li>
-                    <li><a href="/Sobre" class="text-light text-decoration-none">📘 Sobre Nós</a></li>
-                    <li><a href="/Home" class="text-light text-decoration-none">Página Inicial</a></li>
+                    <!-- Lista sem estilos padrão e com texto pequeno -->
+
+                    <p></p>
+                    <!-- Parágrafos vazios, possivelmente para espaçamento -->
+
+                    <li><a href="/Home/QuemSomos" class="text-light text-decoration-none">Quem Somos</a></li>
+                    <!-- Link para página Quem Somos -->
+
+                    <p></p>
+                    <li><a href="/Animais" class="text-light text-decoration-none">Pesquisar Animais</a></li>
+                    <!-- Link para página de pesquisa de animais -->
+
+                    <p></p>
+                    <li><a href="/Home/Privacy" class="text-light text-decoration-none">Políticas e Privacidade</a></li>
+                    <!-- Link para página de políticas e privacidade -->
                 </ul>
             </div>
 
             <!-- Coluna 3: Contacto -->
-            <div class="col-md-4 mb-4">
-                <h6 class="text-info ">Contacto</h6>
-                <p class="mb-1"><i class="bi bi-envelope-fill me-1"></i> contacto@pawbuddy.org</p>
-                <p class="mb-1"><i class="bi bi-phone-fill me-1"></i> +351 912 345 678</p>
+            <div class="col-md-4 mb-4 text-center">
+                <h6 class="text-info fw-bold">Contactos</h6>
+                <p class="mb-1">
+                    <a href="mailto:contacto@pawbuddy.pt" class="text-light text-decoration-none">
+                        <i class="bi bi-envelope-fill me-1"></i> contacto@pawbuddy.pt
+                    </a>
+                </p>
+                <!-- Email clicável com ícone de envelope -->
+
+                <p class="mb-1"><i class="bi bi-phone-fill me-1"></i> +351 924 290 919</p>
+                <!-- Número de telefone com ícone -->
+
                 <p><i class="bi bi-geo-alt-fill me-1"></i> Tomar, Portugal</p>
+                <!-- Localização com ícone de mapa -->
+
                 <div class="mt-3">
+                    <!-- Links para redes sociais com ícones -->
+
                     <a href="https://instagram.com" class="text-light fs-5 me-3" target="_blank"><i class="bi bi-instagram"></i></a>
                     <a href="https://facebook.com" class="text-light fs-5 me-3" target="_blank"><i class="bi bi-facebook"></i></a>
                 </div>
@@ -85,19 +198,51 @@
         </div>
 
         <hr class="border-secondary" />
+        <!-- Linha horizontal com cor secundária -->
 
         <div class="text-center small">
             &copy; @DateTime.Now.Year Paw Buddy. Todos os direitos reservados.
+            <!-- Copyright com ano atual dinâmico -->
         </div>
     </div>
 </footer>
 
-
+<!-- Scripts JS -->
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Biblioteca jQuery local -->
+
 <script src="~/js/site.js" asp-append-version="true"></script>
+<!-- Script principal do site -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bundle do Bootstrap via CDN (inclui Popper.js) -->
 
 @await RenderSectionAsync("Scripts", required: false)
+<!-- Renderiza scripts específicos de views que herdarem este layout, se existirem -->
+
+<!-- Script para o efeito de corações ao clicar na pata -->
+<script>
+    // Adiciona evento ao clicar no ícone da pata
+    document.getElementById('pawIcon').addEventListener('click', function(e) {
+        // Cria um novo elemento div para o coração
+        const heart = document.createElement('div');
+        heart.classList.add('heart'); // adiciona classe para estilos e animações
+        heart.innerHTML = '❤️';  // conteúdo do coração (podes mudar para outro emoji)
+
+        // Posiciona o coração na posição do clique
+        heart.style.left = e.clientX + 'px';
+        heart.style.top = e.clientY + 'px';
+
+        // Adiciona o coração ao body da página
+        document.body.appendChild(heart);
+
+        // Remove o coração após 1 segundo para não acumular muitos elementos
+        setTimeout(() => {
+            heart.remove();
+        }, 1000);
+    });
+</script>
+
 </body>
 </html>

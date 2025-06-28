@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,10 @@ namespace PawBuddy.Controllers
     /// Permite visualizar, adicionar, editar e remover animais.
     /// Também lida com o upload e validação de imagens.
     /// </summary>
+    // ---------- TUDO neste controller exige Admin ----------
+    [Authorize(Roles = "Admin")]
     public class AnimaisController : Controller
     {
-        // Contexto da base de dados para operações CRUD
         private readonly ApplicationDbContext _context;
         
         /// <summary>
@@ -28,21 +30,10 @@ namespace PawBuddy.Controllers
         {
             _context = context;
         }
-    
-        /// <summary>
-        /// Mostra a lista de animais com possibilidade de filtragem
-        /// </summary>
-        /// <param name="searchNome">Filtro por nome do animal</param>
-        /// <param name="especie">Filtro por espécie</param>
-        /// <param name="genero">Filtro por género</param>
-        /// <returns>Vista com a lista filtrada de animais</returns>
-        // GET: Animais
-        public async Task<IActionResult> Index(string searchNome, string especie, string genero)
+        public async Task<IActionResult> IndexPartial(string searchNome, string especie, string genero)
         {
-            // Obter todos os animais como queryable para permitir filtragem
             var animais = _context.Animal.AsQueryable();
 
-            // Aplicar filtros se foram fornecidos
             if (!string.IsNullOrEmpty(searchNome))
                 animais = animais.Where(a => a.Nome.Contains(searchNome));
 
@@ -52,12 +43,48 @@ namespace PawBuddy.Controllers
             if (!string.IsNullOrEmpty(genero))
                 animais = animais.Where(a => a.Genero == genero);
 
-            // Guardar o filtro atual para manter o estado da vista
-            ViewData["CurrentFilter"] = searchNome;
+            var listaAnimais = await animais.ToListAsync();
 
-            // Retornar vista com a lista de animais
-            return View(await animais.ToListAsync());
+            return PartialView("_IndexPartial", listaAnimais);
         }
+
+        /// <summary>
+        /// Lista todos os animais cadastrados.
+        /// </summary>
+        /// <returns>Vista com a lista de animais.</returns>
+        // GET: Animais
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(string searchNome, string especie, string genero, int page = 1, int pageSize = 9)
+        {
+            var animais = _context.Animal.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchNome))
+                animais = animais.Where(a => a.Nome.Contains(searchNome));
+
+            if (!string.IsNullOrEmpty(especie))
+                animais = animais.Where(a => a.Especie == especie);
+
+            if (!string.IsNullOrEmpty(genero))
+                animais = animais.Where(a => a.Genero == genero);
+
+            int totalItems = await animais.CountAsync();
+
+            var animaisPaginados = await animais
+                .OrderBy(a => a.Nome)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewData["CurrentFilter"] = searchNome ?? "";
+            ViewData["CurrentEspecie"] = especie ?? "";
+            ViewData["CurrentGenero"] = genero ?? "";
+
+            return View(animaisPaginados);
+        }
+
+
 
         
         /// <summary>
@@ -66,15 +93,17 @@ namespace PawBuddy.Controllers
         /// <param name="id">ID do animal.</param>
         /// <returns>Vista de detalhes ou NotFound.</returns>
         // GET: Animais/Details/5
+        
+        [AllowAnonymous]  
+        
         public async Task<IActionResult> Details(int? id)
         {
-            // Verificar se o ID foi fornecido
+            
             if (id == null)
             {
                 return NotFound();
             }
 
-            // Procurar o animal na base de dados
             var animal = await _context.Animal
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (animal == null)
@@ -115,7 +144,6 @@ namespace PawBuddy.Controllers
                 animal.Imagem = ""; 
             }
 
-            // Mostrar erros de validação no console para debug
             if (!ModelState.IsValid)
             {
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
@@ -124,16 +152,13 @@ namespace PawBuddy.Controllers
                 }
             }
 
-            // Permitir continuar se o modelo for válido ou se houver imagem
             if (ModelState.IsValid || (imagem != null && imagem.Length > 0)) // Permitir seguir se houver imagem
             {
                 try
                 {
                     // Se uma imagem foi enviada
-                    // Processar a imagem se foi fornecida
                     if (imagem != null && imagem.Length > 0)
                     {
-                        // Validar extensão do ficheiro
                         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
                         var fileExtension = Path.GetExtension(imagem.FileName).ToLower();
 
@@ -143,7 +168,6 @@ namespace PawBuddy.Controllers
                             return View(animal);
                         }
 
-                        // Validar tipo MIME
                         var validMimeTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/bmp" };
                         var mimeType = imagem.ContentType.ToLower();
 
@@ -153,7 +177,6 @@ namespace PawBuddy.Controllers
                             return View(animal);
                         }
 
-                        // Preparar diretório de upload
                         var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
                         if (!Directory.Exists(uploadPath))
                         {
@@ -164,7 +187,6 @@ namespace PawBuddy.Controllers
                         var tempFileName = Guid.NewGuid().ToString() + fileExtension;
                         var tempFilePath = Path.Combine(uploadPath, tempFileName);
 
-                        // Guardar ficheiro temporário
                         using (var fileStream = new FileStream(tempFilePath, FileMode.Create))
                         {
                             await imagem.CopyToAsync(fileStream);
@@ -209,6 +231,7 @@ namespace PawBuddy.Controllers
         /// <param name="id">ID do animal.</param>
         /// <returns>Vista de edição ou NotFound.</returns>
         // GET: Animais/Edit/5
+       
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
