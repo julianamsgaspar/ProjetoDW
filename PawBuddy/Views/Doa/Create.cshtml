@@ -11,7 +11,7 @@
 <div class="container mt-5">
     <div class="card shadow-lg rounded-4">
         <div class="card-body">
-            <h2 class="card-title mb-4 text-center text-primary">Fazer uma Doação</h2>
+            <h2 class="card-title mb-4 text-center ">Fazer uma Doação</h2>
             <h5 class="text-muted text-center mb-4">Ajude-nos a cuidar dos nossos animais</h5>
 
             @{
@@ -20,7 +20,7 @@
 
             <form asp-action="Create" asp-route-id="@animalId" method="post">
 
-            <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                 <div class="mb-3">
                     <label asp-for="PrecoAux" class="form-label fw-semibold">Valor da Doação (€)</label>
@@ -32,14 +32,14 @@
                 <input type="hidden" asp-for="AnimalFK"  />
 
                 <div class="d-grid gap-2 mt-4">
-                    <button type="submit" class="btn btn-success btn-lg">
+                    <button type="submit" class="btn btn-roxo">
                         <i class="bi bi-heart-fill me-2"></i>Doar Agora
                     </button>
                 </div>
             </form>
 
             <div class="text-center mt-4">
-                <a asp-action="Index" asp-controller="Animais" class="btn btn-outline-secondary">
+                <a asp-action="Index" asp-controller="Animais" class="btn btn-roxo">
                     <i class="bi bi-arrow-left me-1"></i> Voltar
                 </a>
             </div>

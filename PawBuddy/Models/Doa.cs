@@ -11,7 +11,7 @@ namespace PawBuddy.Models;
 public class Doa
 {
 	/// <summary>
-	/// idendificação da doação
+	/// identificação da doação
 	/// </summary>
 	public int Id { get; set; }
 	
