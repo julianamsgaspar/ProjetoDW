@@ -266,6 +266,7 @@ internal class DbInitializer
                     Pais = "Portugal",
                     Nif = "111111111",
                     Telemovel = "912345678",
+                    DataNascimento = new DateTime(1990, 5, 21),
                     Email = "andresilva@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[0]
                 },
@@ -277,6 +278,7 @@ internal class DbInitializer
                     Pais = "Portugal",
                     Nif = "222222222",
                     Telemovel = "923456789",
+                    DataNascimento = new DateTime(1984, 10, 21),
                     Email = "jmendes@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[1]
                 },
@@ -287,6 +289,7 @@ internal class DbInitializer
                     CodPostal = "1200-001 LISBOA",
                     Pais = "Portugal",
                     Nif = "333333333",
+                    DataNascimento = new DateTime(2001, 11, 24),
                     Telemovel = "934567890",
                     Email = "pedroM@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[2]
@@ -298,6 +301,7 @@ internal class DbInitializer
                     CodPostal = "1100-001 LISBOA",
                     Pais = "Portugal",
                     Nif = "444444444",
+                    DataNascimento = new DateTime(2000, 2, 3),
                     Telemovel = "945678901",
                     Email = "anasantos@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[3]
@@ -310,6 +314,7 @@ internal class DbInitializer
                     Pais = "Portugal",
                     Nif = "555555555",
                     Telemovel = "956789012",
+                    DataNascimento = new DateTime(1995, 4, 10),
                     Email = "mariaoliveira@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[4]
                 },
@@ -321,6 +326,7 @@ internal class DbInitializer
                     Pais = "Portugal",
                     Nif = "666666666",
                     Telemovel = "967890123",
+                    DataNascimento = new DateTime(1991, 4, 16),
                     Email = "carlosr@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[5]
                 },
@@ -332,6 +338,7 @@ internal class DbInitializer
                     Pais = "Portugal",
                     Nif = "777777777",
                     Telemovel = "978901234",
+                    DataNascimento = new DateTime(2002, 7, 14),
                     Email = "sofiaalmeida@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[6]
                 },
@@ -343,6 +350,7 @@ internal class DbInitializer
                     Pais = "Portugal",
                     Nif = "888888888",
                     Telemovel = "989012345",
+                    DataNascimento = new DateTime(1988, 8, 19),
                     Email = "ruip@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[7]
                 },
@@ -354,6 +362,7 @@ internal class DbInitializer
                     Pais = "Portugal",
                     Nif = "999999999",
                     Telemovel = "990123456",
+                    DataNascimento = new DateTime(1983, 4, 15),
                     Email = "inesf@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[8]
                 },
@@ -364,6 +373,7 @@ internal class DbInitializer
                     CodPostal = "1200-004 LISBOA",
                     Pais = "Portugal",
                     Nif = "101010101",
+                    DataNascimento = new DateTime(1990, 5, 21),
                     Telemovel = "901234567",
                     Email = "miguelcosta@mail.pt",
                     IdentityUser = novosUtilizadoresIdentity[9]
@@ -429,28 +439,31 @@ internal class DbInitializer
                     Animal = animaisLista[0], // Bobby
                     Utilizador = utilizadoress[1], // José Mendes
                     DataD = DateTime.Now.AddDays(-20),
-                    Valor = (decimal)65.5
+                  Valor = (decimal)65.5
                 },
                 new Doa
                 {
                     Animal = animaisLista[2], // Max
                     Utilizador = utilizadoress[4], // Maria Oliveira
                     DataD = DateTime.Now.AddDays(-12),
-                    Valor = (decimal)10.5
+                  Valor= (Decimal) 10.0
+
                 },
                 new Doa
                 {
                     Animal = animaisLista[5], // Mia
                     Utilizador = utilizadoress[6], // Sofia Almeida
                     DataD = DateTime.Now.AddDays(-8),
-                    Valor = (decimal)5.5
+                  Valor= (Decimal) 22.2
+
                 },
                 new Doa
                 {
                     Animal = animaisLista[9], // Biscoito
                     Utilizador = utilizadoress[8], // Inês Ferreira
                     DataD = DateTime.Now.AddDays(-3),
-                    Valor= (decimal)25.5
+                  Valor= (Decimal) 13.5
+
                 }
             ];
 
