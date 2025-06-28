@@ -8,7 +8,6 @@
 
 <h3>Tens a certeza que queres eliminar este Utilizador?</h3>
 <div>
-    <h4>Utilizador</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -63,7 +62,7 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Voltar</a>
+        <input type="submit" value="Apagar" class="btn-paleta" /> |
+        <a asp-action="Index" asp-controller="Administrador" class="btn-paleta">Voltar ao Painel</a>
     </form>
 </div>

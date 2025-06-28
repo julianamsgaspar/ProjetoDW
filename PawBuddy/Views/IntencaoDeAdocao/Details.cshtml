@@ -67,8 +67,10 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
+    <p></p>
+    <a asp-action="Edit" class="btn-paleta" asp-route-id="@Model?.Id">Editar</a>
+    <p></p>
     <div>
-        <a asp-action="Index" asp-controller="Administrador">Voltar ao Painel</a>
+        <a asp-action="Index" asp-controller="Administrador" class="btn-paleta">Voltar ao Painel</a>
     </div>
 </div>

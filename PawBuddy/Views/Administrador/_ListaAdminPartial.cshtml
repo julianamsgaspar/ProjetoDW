@@ -17,7 +17,15 @@
             <td>@admin.Email</td>
             <td>@admin.PhoneNumber</td>
             <td>
-                <a asp-controller="Administrador" asp-action="Delete" asp-route-id="@admin.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                <a asp-action="Edit" asp-route-id="@admin.Id" class="text-warning me-2" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
+                <a asp-action="Details" asp-route-id="@admin.Id" class="text-info me-2" title="Detalhes">
+                    <i class="bi bi-eye"></i>
+                </a>
+                <a asp-action="Delete" asp-route-id="@admin.Id" class="text-danger" title="Eliminar">
+                    <i class="bi bi-trash"></i>
+                </a>
             </td>
         </tr>
     }
@@ -25,8 +33,9 @@
 </table>
 </div>
 <p>
-    <a href="#" class="menu-link btn btn-outline-secondary" data-url="/Administrador/Create">
+    <a href="/Administrador/Create" class="menu-link btn btn-outline-secondary">
         <i class="bi bi-plus-circle"></i> Criar novo Administrador
     </a>
+
 </p>
 

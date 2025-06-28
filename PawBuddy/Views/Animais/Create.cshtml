@@ -4,9 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Criar</h1>
-
-<h4>Animal</h4>
+<h1>Criar novo animal</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -47,15 +45,19 @@
                 <input type="file" asp-for="Imagem" class="form-control" />
                 <span asp-validation-for="Imagem" class="text-danger"></span>
             </div>
-
+            <p>
+                
+            </p>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Criar" class="btn-paleta" />
             </div>
         </form>
     </div>
 </div>
-
+<p>
+    
+</p>
 <div>
-    <a asp-action="Index" asp-controller="Administrador">Voltar ao Painel</a>
+    <a asp-action="Index" asp-controller="Administrador" class="btn-paleta">Voltar ao Painel</a>
 </div>
 

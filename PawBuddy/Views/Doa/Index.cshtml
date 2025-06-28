@@ -53,4 +53,6 @@
     </tbody>
 </table>
 <!-- Total das Doações -->
-<p><strong>Total das doações:</strong> @String.Format("{0:C}", total_doacoes)</p>
+@using System.Globalization
+
+<p><strong>Total das doações:</strong> @String.Format(new CultureInfo("pt-PT"), "{0:C}", total_doacoes)</p>

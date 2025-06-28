@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PawBuddy.Data;
 using PawBuddy.Models;
 using Microsoft.AspNetCore.Authorization;
+using PawBuddy.ViewModels;
 
 namespace PawBuddy.Controllers
 {
@@ -57,7 +58,6 @@ namespace PawBuddy.Controllers
         {
             return View();
         }
-
         /// <summary>
         /// Processa o formulário para criar um novo administrador.
         /// </summary>
@@ -105,8 +105,8 @@ namespace PawBuddy.Controllers
                 _context.Utilizador.Add(novoUtilizador);
                 await _context.SaveChangesAsync();
 
-                // Retorna partial view atualizada com a lista de admins (para AJAX)
-                return PartialView("ListaAdminPartial", _userManager.Users.ToList());
+                return RedirectToAction("Index"); // ou "ListaAdmin", conforme tiveres
+
 
                 // Se quiser desativar redirecionamento, pode comentar a linha abaixo:
                 // return RedirectToAction(nameof(ListaAdmin));
@@ -129,7 +129,7 @@ namespace PawBuddy.Controllers
                 DataNascimento = Idade
             });
         }
-    
+       
         /// <summary>
         /// Exibe formulário de edição de administrador.
         /// </summary>
@@ -153,6 +153,7 @@ namespace PawBuddy.Controllers
 
             return View(utilizador); // Modelo principal é Utilizador
         }
+
 
         /// <summary>
         /// Atualiza os dados do administrador no Identity e na tabela personalizada.
@@ -196,13 +197,13 @@ namespace PawBuddy.Controllers
                 await _userManager.UpdateAsync(identityUser);
             }
 
-            return RedirectToAction(nameof(ListaAdmin));
+            return RedirectToAction(nameof(Index));
         }
+
 
         /// <summary>
         /// Exibe detalhes do administrador.
         /// </summary>
-        [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -218,10 +219,15 @@ namespace PawBuddy.Controllers
             if (utilizador == null)
                 return NotFound();
 
-            ViewData["IdentityUser"] = identityUser;
-            return View(utilizador); // Pode criar um ViewModel se quiser passar os dois objetos
+            var model = new AdminViewModel
+            {
+                IdentityUser = identityUser,
+                Utilizador = utilizador
+            };
+
+            return View(model);
         }
-        
+
         /// <summary>
         /// Exibe confirmação de eliminação de administrador.
         /// </summary>
@@ -250,6 +256,7 @@ namespace PawBuddy.Controllers
 
             return View(identityUser); // Modelo principal é IdentityUser
         }
+
         
         /// <summary>
         /// Remove permanentemente um administrador.
@@ -266,7 +273,7 @@ namespace PawBuddy.Controllers
             if (_userManager.GetUserId(User) == id)
             {
                 TempData["Erro"] = "Não pode eliminar sua própria conta!";
-                return RedirectToAction(nameof(ListaAdmin));
+                return RedirectToAction(nameof(Index));
             }
 
             // Remove da tabela personalizada
@@ -284,11 +291,11 @@ namespace PawBuddy.Controllers
             if (!result.Succeeded)
             {
                 TempData["Erro"] = "Erro ao eliminar o administrador.";
-                return RedirectToAction(nameof(ListaAdmin));
+                return RedirectToAction(nameof(Index));
             }
 
             TempData["Sucesso"] = "Administrador eliminado com sucesso!";
-            return RedirectToAction(nameof(ListaAdmin));
+            return RedirectToAction(nameof(Index));
         }
         
         /// <summary>
@@ -298,5 +305,6 @@ namespace PawBuddy.Controllers
         {
             return _context.Utilizador.Any(e => e.Id == id);
         }
+
     }
 }

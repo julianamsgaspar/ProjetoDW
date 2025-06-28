@@ -2,9 +2,11 @@
 @* Botão de criar novo animal - visível apenas para administradores *@
 @if (User.IsInRole("Admin"))
 {
-    <div class="text-end mb-4">
-        <a class="btn btn-outline-secondary" asp-action="Create">
+    <div class="text-start mb-4">
+        <a asp-action="Create">
+        <button class="btn-paleta" >
             <i class="bi bi-plus-circle"></i> Criar Novo Animal
+        </button>
         </a>
     </div>
 }

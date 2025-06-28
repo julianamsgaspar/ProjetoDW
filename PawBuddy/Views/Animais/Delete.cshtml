@@ -4,12 +4,9 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Apagar Definitivamente</h1>
-
 <h3>De certeza que queres eliminar este animal da base de dados?</h3>
 
 <div>
-    <h4>Animal</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -69,9 +66,15 @@
     
     <form asp-action="Delete" method="post" id="deleteForm">
         <input type="hidden" asp-for="Id" />
-        <button type="button" class="btn btn-danger" onclick="confirmDelete()">Confirmar Eliminação</button> |
+        <p>
+            
+        </p>
+        <button type="button" class="btn-paleta" onclick="confirmDelete()">Confirmar Eliminação</button>
+        <p>
+            
+        </p>
         <div>
-            <a asp-action="Index" asp-controller="Administrador">Voltar ao Painel</a>
+            <a asp-action="Index" asp-controller="Administrador" class="btn-paleta">Voltar ao Painel</a>
         </div>
     </form>
 </div>
