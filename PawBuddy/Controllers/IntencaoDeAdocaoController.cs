@@ -123,10 +123,10 @@ namespace PawBuddy.Controllers
                 return NotFound();
             }
 
-            int animal = await _context.Animal.Where(u => u.Id == id)
+            int animalId = await _context.Animal.Where(u => u.Id == id)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
-            if (animal == null)
+            if (animalId == null)
             {
                 return NotFound();
             }
@@ -135,11 +135,34 @@ namespace PawBuddy.Controllers
             var intencoesExistentes = await _context.Intencao
                 .Where(i => i.AnimalFK == id && i.Estado != EstadoAdocao.Rejeitado)
                 .ToListAsync();
+            // Check if animal already has "Emvalidação" or "Concluído" status
+            var statusBloqueadores = new List<EstadoAdocao> { EstadoAdocao.Emvalidacao, EstadoAdocao.Concluido };
+    
+            var animalIndisponivelIntencao = await _context.Intencao
+                .AnyAsync(i => i.AnimalFK == id && statusBloqueadores.Contains(i.Estado));
+            var animalIndisponivelAdotam = await _context.Adotam.AnyAsync(i => i.AnimalFK == id);
+            
+            
+            if (animalIndisponivelIntencao || animalIndisponivelAdotam)
+            {
+                ModelState.AddModelError(string.Empty, "Este animal já está em processo de adoção ou foi adotado e não está disponível.");
+                //return View(intencaoDeAdocao);
+            }
+    
+            // Check if user already has an intention for this animal
+            var intencaoUsuarioExistente = await _context.Intencao
+                .AnyAsync(i => i.AnimalFK == id && i.UtilizadorFK == idUser);
+    
+            if (intencaoUsuarioExistente)
+            {
+                ModelState.AddModelError(string.Empty, "Você já manifestou interesse em adotar este animal.");
+                //return View(intencaoDeAdocao);
+            }
 
             if (ModelState.IsValid)
            {
                intencaoDeAdocao.UtilizadorFK = idUser; 
-               intencaoDeAdocao.AnimalFK = animal;
+               intencaoDeAdocao.AnimalFK = animalId;
                // Forçar o estado para "Reservado"
                intencaoDeAdocao.Estado = EstadoAdocao.Reservado;
                // Mete a data sem mostrar ao utilizador, mete a data quando submete o "formulario"
@@ -225,41 +248,42 @@ namespace PawBuddy.Controllers
                ModelState.AddModelError("", "Utilizador ou Animal não encontrado.");
                return View(intencaoDeAdocao);
            }
+           // Pesquisa a intenção original
+           var intencaoExistente = await _context.Intencao.FindAsync(id);
+           
+           if (intencaoExistente == null){
+               return NotFound(); }
 
            if (ModelState.IsValid)
            {
                try
                {
-                // Busca a intenção original
-                   var existingIntencao = await _context.Intencao.FindAsync(id);
-
-                    if (existingIntencao == null){
-                     return NotFound(); }
+                
 
                     // Atualiza apenas os campos permitidos
-                   existingIntencao.Estado = intencaoDeAdocao.Estado;
-                   existingIntencao.temAnimais = intencaoDeAdocao.temAnimais;
-                   existingIntencao.quaisAnimais = intencaoDeAdocao.quaisAnimais;
-                   existingIntencao.Profissao = intencaoDeAdocao.Profissao;
-                   existingIntencao.Residencia = intencaoDeAdocao.Residencia;
-                   existingIntencao.Motivo = intencaoDeAdocao.Motivo;
-                   existingIntencao.DataIA = intencaoDeAdocao.DataIA;
+                   intencaoExistente.Estado = intencaoDeAdocao.Estado;
+                   intencaoExistente.temAnimais = intencaoDeAdocao.temAnimais;
+                   intencaoExistente.quaisAnimais = intencaoDeAdocao.quaisAnimais;
+                   intencaoExistente.Profissao = intencaoDeAdocao.Profissao;
+                   intencaoExistente.Residencia = intencaoDeAdocao.Residencia;
+                   intencaoExistente.Motivo = intencaoDeAdocao.Motivo;
+                   intencaoExistente.DataIA = intencaoDeAdocao.DataIA;
 
                    // Mantém as chaves estrangeiras originais
-                   existingIntencao.UtilizadorFK = intencaoDeAdocao.UtilizadorFK;
-                   existingIntencao.AnimalFK = intencaoDeAdocao.AnimalFK;
+                   intencaoExistente.UtilizadorFK = intencaoDeAdocao.UtilizadorFK;
+                   intencaoExistente.AnimalFK = intencaoDeAdocao.AnimalFK;
                    
                    if (intencaoDeAdocao.Estado == EstadoAdocao.Concluido)
                    {
                        var finalAdotam = new Adotam();
-                       finalAdotam.AnimalFK = existingIntencao.AnimalFK;
-                       finalAdotam.UtilizadorFK = existingIntencao.UtilizadorFK;
-                       finalAdotam.dateA= existingIntencao.DataIA;
+                       finalAdotam.AnimalFK = intencaoExistente.AnimalFK;
+                       finalAdotam.UtilizadorFK = intencaoExistente.UtilizadorFK;
+                       finalAdotam.dateA=  DateTime.Now;
                        _context.Adotam.Add(finalAdotam);
                            // Remove a existingIntencao da tabela (agora que o processo foi concluído)
                            // Remover todas as intenções para este animal
                        var outrasIntencoes = await _context.Intencao
-                               .Where(i => i.AnimalFK == existingIntencao.AnimalFK)
+                               .Where(i => i.AnimalFK == intencaoExistente.AnimalFK)
                                .ToListAsync(); 
                        _context.Intencao.RemoveRange(outrasIntencoes);
                        
@@ -267,21 +291,11 @@ namespace PawBuddy.Controllers
                    }
                    else if (intencaoDeAdocao.Estado == EstadoAdocao.Rejeitado)
                    {
-                       // Apenas marcar como rejeitado (pode ser reconsiderado)
-                       _context.Update(existingIntencao);
+                       _context.Intencao.Remove(intencaoExistente);
+                       
                    }
                    
-
-                   if (intencaoDeAdocao.Estado == EstadoAdocao.Rejeitado)
-                   {
-                       _context.Intencao.Remove(existingIntencao);
-
-                       // Salva as alterações no banco de dados
-                       _context.SaveChanges();
-                   }
-
-
-                   _context.Update(existingIntencao);
+                   _context.Update(intencaoExistente);
                    await _context.SaveChangesAsync();
 
                    return RedirectToAction(nameof(Index));

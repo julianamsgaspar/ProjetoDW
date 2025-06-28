@@ -260,7 +260,7 @@ internal class DbInitializer
             
                 new Utilizador
                 {
-                    Nome = "André Silva",
+                    Nome = "Andre_Silva",
                     Morada = "Rua  das Flores, 10",
                     CodPostal = "1000-001 LISBOA",
                     Pais = "Portugal",
@@ -272,7 +272,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "José Mendes",
+                    Nome = "JoséMendes",
                     Morada = "Avenida da Liberdade, 25",
                     CodPostal = "1250-001 LISBOA",
                     Pais = "Portugal",
@@ -284,7 +284,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "Pedro Mendes",
+                    Nome = "Pedro_Mendes",
                     Morada = "Rua do Sol, 5",
                     CodPostal = "1200-001 LISBOA",
                     Pais = "Portugal",
@@ -296,7 +296,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "Ana Santos",
+                    Nome = "Ana_Santos",
                     Morada = "Rua da Prata, 30",
                     CodPostal = "1100-001 LISBOA",
                     Pais = "Portugal",
@@ -308,7 +308,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "Maria Oliveira",
+                    Nome = "Maria_Oliveira",
                     Morada = "Rua do Ouro, 15",
                     CodPostal = "1200-002 LISBOA",
                     Pais = "Portugal",
@@ -320,7 +320,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "Carlos Rodrigues",
+                    Nome = "Carlos_Rodrigues",
                     Morada = "Rua Augusta, 100",
                     CodPostal = "1100-002 LISBOA",
                     Pais = "Portugal",
@@ -332,7 +332,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "Sofia Almeida",
+                    Nome = "Sofia_Almeida",
                     Morada = "Avenida Almirante Reis, 50",
                     CodPostal = "1150-001 LISBOA",
                     Pais = "Portugal",
@@ -344,7 +344,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "Rui Pereira",
+                    Nome = "Rui_Pereira",
                     Morada = "Rua Castilho, 20",
                     CodPostal = "1250-002 LISBOA",
                     Pais = "Portugal",
@@ -356,7 +356,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "Inês Ferreira",
+                    Nome = "Ines_Ferreira",
                     Morada = "Rua Garrett, 8",
                     CodPostal = "1200-003 LISBOA",
                     Pais = "Portugal",
@@ -368,7 +368,7 @@ internal class DbInitializer
                 },
                 new Utilizador
                 {
-                    Nome = "Miguel Costa",
+                    Nome = "Miguel_Costa",
                     Morada = "Rua do Alecrim, 12",
                     CodPostal = "1200-004 LISBOA",
                     Pais = "Portugal",

@@ -144,19 +144,54 @@ namespace PawBuddy.Controllers
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
 
-            if (idUser == 0)
+            if (idUser == null)
                 return NotFound();
 
             if (id != doa.AnimalFK)
                 return NotFound();
 
-            int animal = await _context.Animal
+            int animalId = await _context.Animal
                 .Where(u => u.Id == id)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
 
-            if (animal == 0)
+            if (animalId == null)
                 return NotFound();
+            
+            // Foi verificado que a BD mete o id do animal como id da doação entao foi foram feitos ajustos para ter chaves unicas
+            // 1. Verifica se o objeto doa tem um ID válido (0 ou null)
+            if (doa.Id <= 0) // Simplifica a verificação (cobre null, 0 e negativos)
+            {
+                // Se não tiver ID válido:
+                // Busca o maior ID existente na tabela Doa de forma segura
+                int maxId = await _context.Doa
+                    .AsNoTracking() // Melhora performance (apenas leitura)
+                    .MaxAsync(d => (int?)d.Id) ?? 0; // Trata tabela vazia
+    
+                // Garante que o novo ID seja único
+                doa.Id = maxId + 1;
+            }
+            else // 2. Se o objeto doa já tem um ID definido
+            {
+                // Verifica se o ID já existe na base de dados
+                bool idExists = await _context.Doa
+                    .AsNoTracking()
+                    .AnyAsync(d => d.Id == doa.Id);
+    
+                // Se o ID já existe, substitui por um novo ID único
+                if (idExists)
+                {
+                    // Busca o próximo ID disponível de forma atômica
+                    int nextAvailableId = await _context.Doa
+                        .AsNoTracking()
+                        .MaxAsync(d => (int?)d.Id) ?? 0;
+        
+                    doa.Id = nextAvailableId + 1;
+        
+                }
+    
+                // Se o ID não existe, mantém o ID fornecido (já é único)
+            }
 
             // Validar e converter PrecoAux para Valor decimal
             if (string.IsNullOrWhiteSpace(doa.PrecoAux))
@@ -184,7 +219,7 @@ namespace PawBuddy.Controllers
 
             if (ModelState.IsValid)
             {
-                doa.AnimalFK = animal;
+                doa.AnimalFK = animalId;
                 doa.UtilizadorFK = idUser;
                 doa.DataD = DateTime.Now;
 
