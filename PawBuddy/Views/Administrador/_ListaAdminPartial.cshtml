@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+<div class="table-responsive">
+<table class="table">
+    <thead>
+    <tr>
+        <th>Nome de Utilizador</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var admin in Model)
+    {
+        <tr>
+            <td>@admin.UserName</td>
+            <td>@admin.Email</td>
+            <td>@admin.PhoneNumber</td>
+            <td>
+                <a asp-controller="Administrador" asp-action="Delete" asp-route-id="@admin.Id" class="btn btn-sm btn-danger">Eliminar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+<p>
+    <a href="#" class="menu-link btn btn-outline-secondary" data-url="/Administrador/Create">
+        <i class="bi bi-plus-circle"></i> Criar novo Administrador
+    </a>
+</p>
+

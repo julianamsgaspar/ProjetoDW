@@ -17,7 +17,9 @@ public class Doa
 	
 	/// <summary>
 	/// valor da doação
-	/// </summary>
+	/// </summary
+	
+	[Required(ErrorMessage = "Por favor, introduza um valor para doar.")]
     public decimal Valor { get; set; }
 	/// <summary>
 	/// data da doação

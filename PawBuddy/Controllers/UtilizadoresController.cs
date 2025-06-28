@@ -33,6 +33,11 @@ namespace PawBuddy.Controllers
         {
             return View(await _context.Utilizador.ToListAsync());
         }
+        public IActionResult IndexPartial()
+        {
+            var utilizadores = _context.Utilizador.ToList();
+            return PartialView("_IndexPartial", utilizadores);
+        }
 
         /// <summary>
         /// Mostra os detalhes de um utilizador específico.

@@ -71,7 +71,7 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             public string Email { get; set; }*/
 
             // Palavra-passe obrigatória, com mínimo de 6 caracteres
-            [Required]
+            [Required(ErrorMessage = "O campo {0} é de preenchimento obrigatório.")]
             [StringLength(100, ErrorMessage = "A palavra-passe deve ter entre {2} e {1} caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
@@ -104,7 +104,7 @@ namespace PawBuddy.Areas.Identity.Pages.Account
         /// <returns></returns>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
 {
-    _logger.LogInformation("Iniciando processo de registro..."); // <-- NOVO
+    _logger.LogInformation("Iniciando processo de registo..."); // <-- NOVO
     // Validação de modelo (dados mal preenchidos)
     if (!ModelState.IsValid)
     {
@@ -187,8 +187,23 @@ namespace PawBuddy.Areas.Identity.Pages.Account
                     values: new { area = "Identity", userId, code, returnUrl },
                     protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(Input.Utilizador.Email, "Confirmação de Email",
-                    $"Por favor confirme a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
+                await _emailSender.SendEmailAsync(Input.Utilizador.Email, "Confirmação de Conta PawBuddy",
+                    $@"
+                    <div style='font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>
+                        <h2 style='color: #2E8B57;'>Olá!</h2>
+                        <p>Obrigado por se registar no <strong>PawBuddy</strong>.</p>
+                        <p>Para ativar sua conta, clique no botão abaixo:</p>
+                        <p style='text-align: center; margin: 30px 0;'>
+                            <a href='{HtmlEncoder.Default.Encode(callbackUrl)}' style='background-color: #2E8B57; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Confirmar Conta</a>
+                        </p>
+                        <p>Se você não se registou, por favor ignore este email.</p>
+                        <br />
+                        <p>Com os melhores cumprimentos,</p>
+                        <p><strong>A equipa PawBuddy</strong></p>
+                    </div>
+                    ");
+
+
 
                 return RedirectToPage("RegisterConfirmation", new { email = Input.Utilizador.Email, returnUrl });
             }

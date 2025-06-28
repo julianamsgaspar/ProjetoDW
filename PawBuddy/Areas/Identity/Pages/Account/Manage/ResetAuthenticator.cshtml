@@ -1,0 +1,24 @@
+﻿@page
+@model ResetAuthenticatorModel
+@{
+    ViewData["Title"] = "Repor chave do autenticador";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h3>@ViewData["Title"]</h3>
+<div class="alert alert-warning" role="alert">
+    <p>
+        <span class="glyphicon glyphicon-warning-sign"></span>
+        <strong>Se repuser a chave do autenticador, a sua aplicação autenticadora deixará de funcionar até ser reconfigurada.</strong>
+    </p>
+    <p>
+        Este processo desativa a autenticação em dois fatores até verificar novamente a sua aplicação autenticadora.
+        Caso não complete a configuração da aplicação autenticadora, poderá perder o acesso à sua conta.
+    </p>
+</div>
+<div>
+    <form id="reset-authenticator-form" method="post">
+        <button id="reset-authenticator-button" class="btn btn-danger" type="submit">Repor chave do autenticador</button>
+    </form>
+</div>

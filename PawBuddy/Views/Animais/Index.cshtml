@@ -18,102 +18,95 @@
         @await Html.PartialAsync("_IndexPartial", Model)
     }
 </div>
-
-<body>
+@if (!User.IsInRole("Admin")){
 <!-- Título e introdução -->
 <div class="text-center my-4">
-    <h1 class="display-5 text-primary">Animais Disponíveis para Adoção</h1>
+    <h1 class="display-5 titulo">Animais Disponíveis para Adoção</h1>
     <p class="lead">Conheça os nossos patudos que desejam um lar cheio de carinho!</p>
 </div>
-
-@* Botão de criar novo animal - visível apenas para administradores *@
-@if (User.IsInRole("Admin"))
-{
-    <div class="text-end mb-4">
-        <a class="btn btn-outline-secondary" asp-action="Create">
-            <i class="bi bi-plus-circle"></i> Criar Novo Animal
-        </a>
-    </div>
 }
 @* Formulário de filtros *@
-<form asp-action="Index" method="get" class="mb-4">
-    <div class="row g-3 align-items-center">
-        <div class="col-md-4">
-            <input type="text" name="searchNome" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Pesquisar por nome...">
+@if (!User.IsInRole("Admin"))
+{
+    <form asp-action="Index" method="get" class="mb-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-4">
+                <input type="text" name="searchNome" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Pesquisar por nome...">
+            </div>
+            <div class="col-md-3">
+                <select name="especie" class="form-select">
+                    <option value="">Todas as espécies</option>
+                    <option value="Cão">Cão</option>
+                    <option value="Gato">Gato</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="genero" class="form-select">
+                    <option value="">Todos os géneros</option>
+                    <option value="Macho">Macho</option>
+                    <option value="Fêmea">Fêmea</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+            </div>
         </div>
-        <div class="col-md-3">
-            <select name="especie" class="form-select">
-                <option value="">Todas as espécies</option>
-                <option value="Cão">Cão</option>
-                <option value="Gato">Gato</option>
-                @* Adiciona mais conforme necessário *@
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select name="genero" class="form-select">
-                <option value="">Todos os géneros</option>
-                <option value="Macho">Macho</option>
-                <option value="Fêmea">Fêmea</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-outline-primary w-100">
-                <i class="bi bi-search"></i> Filtrar
-            </button>
-        </div>
-    </div>
-</form>
+    </form>
+}
 
-<!-- Lista de animais em cards responsivos -->
-<div class="container">
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var item in Model)
-        {
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <img src="@item.Imagem" class="card-img-top" alt="Imagem de @item.Nome" style="object-fit: cover; height: 250px;" />
 
-                    <div class="card-body d-flex flex-column align-items-center">
-                        <h5 class="card-title text-center w-100">@item.Nome</h5>
+@if (!User.IsInRole("Admin"))
+{
+    <!-- Lista de animais em cards responsivos -->
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@item.Imagem" class="card-img-top" alt="Imagem de @item.Nome" style="object-fit: cover; height: 250px;" />
 
-                        <div class="d-flex justify-content-center align-items-center gap-3 w-100">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <h5 class="card-title text-center w-100">@item.Nome</h5>
 
-                            <button type="button" class="btn btn-outline-primary btn-sm animal-popover"
-                                    data-bs-toggle="popover"
-                                    data-bs-html="true"
-                                    data-bs-trigger="hover focus"
-                                    data-bs-content="
-                                        <strong>Raça:</strong> @item.Raca<br/>
-                                        <strong>Idade:</strong> @item.Idade anos<br/>
-                                        <strong>Género:</strong> @item.Genero
-                                    ">
-                                <i class="bi bi-eye"></i>
-                            </button>
+                            <div class="d-flex justify-content-center align-items-center gap-3 w-100">
+                                <button type="button" class="btn btn-paleta btn-sm animal-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-html="true"
+                                        data-bs-trigger="hover focus"
+                                        data-bs-content="
+                                            <strong>Raça:</strong> @item.Raca<br/>
+                                            <strong>Idade:</strong> @item.Idade<br/>
+                                            <strong>Género:</strong> @item.Genero">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-between">
+                            <a class="btn btn-paleta" asp-action="Details" asp-route-id="@item.Id">
+                                <i class="bi bi-file-earmark-text"></i> Ver ficha completa
+                            </a>
+                            @if (User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-sm btn-success" asp-controller="IntencaoDeAdocao" asp-action="Create" asp-route-id="@item.Id">
+                                    <i class="bi bi-house-heart-fill"></i> Adotar
+                                </a>
+                                <a class="btn btn-sm btn-success" asp-controller="Doa" asp-action="Create" asp-route-id="@item.Id">
+                                    <i class="bi bi-house-heart-fill"></i> Doar
+                                </a>
+                            }
                         </div>
                     </div>
-
-                    <div class="card-footer d-flex justify-content-between">
-                        <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@item.Id">
-                            <i class="bi bi-file-earmark-text"></i> Ver ficha completa
-                        </a>
-                        @if (User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
-                        {
-                            <a class="btn btn-sm btn-success" asp-controller="IntencaoDeAdocao" asp-action="Create" asp-route-id="@item.Id">
-                                <i class="bi bi-house-heart-fill"></i> Adotar
-                            </a>
-                        }
-                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                        {
-                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
-                        }
-                    </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>
-@if ((int)ViewData["TotalPages"] > 1)
+}
+
+@if (!User.IsInRole("Admin") && (int)ViewData["TotalPages"] > 1)
 {
     <nav aria-label="Paginação" class="mt-4">
         <ul class="pagination justify-content-center">
@@ -132,10 +125,8 @@
             }
         </ul>
     </nav>
-
 }
 
-</body>
 
 @section Scripts {
     <script>
@@ -152,12 +143,12 @@
         position: absolute;
         top: 110%;
         left: 0;
-        background-color: white;
-        border: 1px solid #ccc;
+        background-color: #b3ebfb; /* substitui o branco por um azul da paleta */
+        border: 1px solid #8d58a6; /* contorno em roxo forte para contraste */
         padding: 10px;
         z-index: 999;
         width: 220px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        box-shadow: 0 0 10px rgba(141, 88, 166, 0.3); /* sombra roxa clara */
         border-radius: 8px;
         font-size: 0.9rem;
     }

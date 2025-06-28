@@ -1,11 +1,20 @@
 ﻿@model IEnumerable<PawBuddy.Models.Animal>
-
+@* Botão de criar novo animal - visível apenas para administradores *@
+@if (User.IsInRole("Admin"))
+{
+    <div class="text-end mb-4">
+        <a class="btn btn-outline-secondary" asp-action="Create">
+            <i class="bi bi-plus-circle"></i> Criar Novo Animal
+        </a>
+    </div>
+}
+<div class="table-responsive">
 <table class="table">
     <thead>
     <tr>
         <th>Nome</th>
         <th>Espécie</th>
-        <th>Gênero</th>
+        <th>Género</th>
         <th>Ações</th>
     </tr>
     </thead>
@@ -17,11 +26,15 @@
             <td>@animal.Especie</td>
             <td>@animal.Genero</td>
             <td>
-                <a href="/Animais/Edit/@animal.Id">Editar</a> |
-                <a href="/Animais/Delete/@animal.Id">Excluir</a>
+                <a asp-action="Edit" asp-route-id="@animal.Id" class="text-warning me-2" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
+                <a asp-action="Delete" asp-route-id="@animal.Id" class="text-danger" title="Eliminar">
+                    <i class="bi bi-trash"></i>
+                </a>
             </td>
         </tr>
     }
     </tbody>
 </table>
-
+</div>

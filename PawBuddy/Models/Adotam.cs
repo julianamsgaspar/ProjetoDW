@@ -20,7 +20,7 @@ public class Adotam
     /// <summary>
     /// data da adoção definitiva
     /// </summary>
-    [Display(Name = "Data da Doação")]
+    [Display(Name = "Data da Adoação")]
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
     [DataType(DataType.Date)] 
     public DateTime dateA { get; set; }

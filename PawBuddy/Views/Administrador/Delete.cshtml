@@ -9,7 +9,9 @@
     {
         <div class="alert alert-danger">
             <p>Erro: Administrador não encontrado.</p>
-            <a asp-action="ListaAdmin" class="btn btn-secondary">Voltar</a>
+          
+                <a asp-action="Index" asp-controller="Administrador">Voltar ao Painel</a>
+          
         </div>
         return;
     }

@@ -68,7 +68,7 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    public async Task<IActionResult> TestEmail()
+    /*public async Task<IActionResult> TestEmail()
     {
         await _emailSender.SendEmailAsync(
             "macielines3012@gmail.com",
@@ -77,5 +77,5 @@ public class HomeController : Controller
         );
 
         return Content("Email enviado com sucesso.");
-    }
+    }*/
 }

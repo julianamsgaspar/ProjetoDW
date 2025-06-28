@@ -95,11 +95,35 @@ body {
     transform: translateY(-100px) scale(1.5);
   }
 }
-.titulo-estilizado {
+.titulo-estilizado, .titulo {
   font-family: 'Atma', cursive;
   font-weight: 600;  /* Dá um pouco de ênfase, pode usar 400 ou 700 também */
   font-size: 2.5rem;
-  color: #f8b917; /* Uma cor coral suave para dar vida */
+  color: #8d58a6; /* Uma cor coral suave para dar vida */
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
   letter-spacing: 1.2px;
+}
+/* Botão personalizado da paleta */
+.btn-paleta {
+  background-color: #8d58a6;
+  color: #fff;
+  border: 1px solid #8d58a6;
+  transition: 0.3s;
+}
+
+.btn-paleta:hover {
+  background-color: #a4c4e4;
+  color: #212529;
+  border-color: #a4c4e4;
+}
+
+/* Força as cores certas nos títulos */
+.card-title {
+  color: #8d58a6 !important;
+}
+
+/* Ativo no navbar com mais contraste */
+.nav-link.active {
+  background-color: #8d58a6 !important;
+  color: #fff !important;
 }

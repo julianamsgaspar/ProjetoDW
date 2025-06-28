@@ -46,5 +46,27 @@
  .icon-helper {
      font-size: 3rem;
  }
+/* Paginação personalizada */
+.pagination .page-link {
+    color: #8d58a6;
+    border: 1px solid #8d58a6;
+    margin: 0 3px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.pagination .page-link:hover {
+    background-color: #b3ebfb;
+    color: #212529;
+    border-color: #a4c4e4;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #8d58a6;
+    border-color: #8d58a6;
+    color: #fff;
+    font-weight: bold;
+}
 
 /* --------------- FIM Index -------------- */

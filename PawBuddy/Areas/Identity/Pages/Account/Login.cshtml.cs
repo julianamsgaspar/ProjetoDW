@@ -73,22 +73,24 @@ namespace PawBuddy.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [Display(Name = "Username or Email")]
+            [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+            [Display(Name = "Username ou Email")]
             public string UsernameOrEmail { get; set; }
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+            [Display(Name = "Password")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Lembrar-me?")]
             public bool RememberMe { get; set; }
+            
         }
 
 
@@ -149,7 +151,7 @@ namespace PawBuddy.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     // Log de sucesso
-                    _logger.LogInformation("User logged in.");
+                    _logger.LogInformation("Utilizador registado com sucesso.");
                     
                     
                     // Guardar o ID do utilizador autenticado na sessão
@@ -170,13 +172,13 @@ namespace PawBuddy.Areas.Identity.Pages.Account
                 // Caso a conta esteja bloqueada
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User account locked out."); // Log de conta bloqueada
+                    _logger.LogWarning("Conta Bloqueada."); // Log de conta bloqueada
                     return RedirectToPage("./Lockout");             // Redireciona para página de bloqueio
                 }
                 else
                 {
                     // Caso o login seja inválido (credenciais erradas)
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Tentativa de acesso ao sistema inválida.");
                     return Page();// Reapresenta a página de login com erro
                 }
             }

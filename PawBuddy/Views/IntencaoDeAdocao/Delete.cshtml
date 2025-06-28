@@ -66,10 +66,22 @@
             @Html.DisplayFor(model => model.Animal.Nome)
         </dd>
     </dl>
-    
-    <form asp-action="DeleteConfirmed" method="post">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="DeleteConfirmed" class="btn btn-danger" /> |
-        <a asp-action="Index">Voltar</a>
-    </form>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <form asp-action="DeleteConfirmed" method="post">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="DeleteConfirmed" class="btn btn-danger" /> |
+            <div>
+                <a asp-action="Index" asp-controller="Administrador">Voltar ao Painel</a>
+            </div>
+        </form>
+    }
+    else
+    {
+        <div>
+            <a asp-action="Index" asp-controller="Animais">Voltar</a>
+        </div>
+    }
+
 </div>

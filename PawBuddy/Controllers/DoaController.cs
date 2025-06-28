@@ -39,17 +39,43 @@ namespace PawBuddy.Controllers
         // GET: Doa
         public async Task<IActionResult> Index()
         {
-            // Obter doações incluindo informações de Animal e Utilizador
             var ListaDeDoacoes = _context.Doa
-                .Include(d => d.Animal).
-                Include(d => d.Utilizador);
-            // Calcular soma total dos valores doados
+                .Include(d => d.Animal)
+                .Include(d => d.Utilizador);
+
             decimal somaValores = ListaDeDoacoes.Sum(d => d.Valor);
-            // Passar o total para a view
+
             ViewBag.SomaValores = somaValores;
+
             return View(await ListaDeDoacoes.ToListAsync());
         }
-    
+
+        
+
+        public IActionResult IndexPartial()
+        {
+            var doacoes = _context.Doa.Include(d => d.Utilizador).Include(d => d.Animal).ToList();
+
+            // Calcular soma das doações
+            ViewBag.somaValores = doacoes.Sum(d => d.Valor);
+
+            return PartialView("_IndexPartial", doacoes);
+        }
+        public async Task<IActionResult> Iban(int id)
+        {
+            var doacao = await _context.Doa
+                .Include(d => d.Animal)
+                .Include(d => d.Utilizador)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (doacao == null)
+            {
+                return NotFound();
+            }
+
+            return View(doacao);
+        }
+
         /// <summary>
         /// Apresenta os detalhes de uma doação específica.
         /// </summary>
@@ -83,18 +109,23 @@ namespace PawBuddy.Controllers
         /// <returns>View de criação da doação.</returns>
         // GET: Doa/Create
         [HttpGet]
-        public async Task<IActionResult>  Create( int id)
+        public IActionResult Create(int id)
         {
-            // Validar ID do animal
-            if (id == 0 || id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
 
-            // Passar ID do animal para a view
+            var doa = new Doa
+            {
+                AnimalFK = id
+            };
+
             ViewBag.AnimalId = id;
-            return View();
+
+            return View(doa);
         }
+
 
         // <summary>
         /// Processa a criação de uma nova doação.
@@ -108,80 +139,65 @@ namespace PawBuddy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromRoute] int id, [Bind("Id,PrecoAux,DataD,AnimalFK")] Doa doa)
         {
-            // Obter ID do utilizador autenticado
-            int idUser;
-            idUser = await _context.Utilizador
+            int idUser = await _context.Utilizador
                 .Where(u => User.Identity.Name == u.Nome)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
-            if (idUser == null)
-            {
+
+            if (idUser == 0)
                 return NotFound();
-            }
-            // Verificar se o ID do animal corresponde
+
             if (id != doa.AnimalFK)
-            {
                 return NotFound();
-            }
-            // Verificar se o animal existe
-            int animal = await _context.Animal.Where(u => u.Id == id)
+
+            int animal = await _context.Animal
+                .Where(u => u.Id == id)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
-            if (animal == null)
-            {
+
+            if (animal == 0)
                 return NotFound();
-            }
-            
-            // Foi verificado que a BD mete o id do animal como id da doação entao foi foram feitos ajustos para ter chaves unicas
-            // 1. Verifica se o objeto doa tem um ID válido (0 ou null)
-            if (doa.Id <= 0) // Simplifica a verificação (cobre null, 0 e negativos)
+
+            // Validar e converter PrecoAux para Valor decimal
+            if (string.IsNullOrWhiteSpace(doa.PrecoAux))
             {
-                // Se não tiver ID válido:
-                // Procura o maior ID existente na tabela Doa de forma segura
-                int maxId = await _context.Doa
-                    .AsNoTracking() // Melhora performance (apenas leitura)
-                    .MaxAsync(d => (int?)d.Id) ?? 0; // Trata tabela vazia
-    
-                // Garante que o novo ID seja único
-                doa.Id = maxId + 1;
+                ModelState.AddModelError("PrecoAux", "Por favor, introduza um valor para doar.");
             }
-            else // 2. Se o objeto doa já tem um ID definido
+            else
             {
-                // Verifica se o ID já existe na base de dados
-                bool idExists = await _context.Doa
-                    .AsNoTracking()
-                    .AnyAsync(d => d.Id == doa.Id);
-    
-                // Se o ID já existe, substitui por um novo ID único
-                if (idExists)
+                // Substitui '.' por ',' caso o utilizador tenha usado ponto como separador decimal
+                var valorString = doa.PrecoAux.Replace(".", ",");
+        
+                if (!decimal.TryParse(valorString, NumberStyles.Number, new CultureInfo("pt-PT"), out decimal valorConvertido))
                 {
-                    // Busca o próximo ID disponível de forma atômica
-                    int nextAvailableId = await _context.Doa
-                        .AsNoTracking()
-                        .MaxAsync(d => (int?)d.Id) ?? 0;
-        
-                    doa.Id = nextAvailableId + 1;
-        
+                    ModelState.AddModelError("PrecoAux", "Formato do valor inválido.");
                 }
-    
-                // Se o ID não existe, mantém o ID fornecido (já é único)
+                else if (valorConvertido <= 0)
+                {
+                    ModelState.AddModelError("PrecoAux", "O valor tem que ser maior que zero.");
+                }
+                else
+                {
+                    doa.Valor = valorConvertido;
+                }
             }
-            // Converter valor para decimal (formato português)
-            doa.Valor = Convert.ToDecimal(doa.PrecoAux.Replace(".", ","), 
-                new CultureInfo("pt-PT"));
+
             if (ModelState.IsValid)
             {
-                // Preencher dados da doação
                 doa.AnimalFK = animal;
                 doa.UtilizadorFK = idUser;
                 doa.DataD = DateTime.Now;
-                // Guardar na base de dados
+
                 _context.Add(doa);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                return RedirectToAction("Iban", new { id = doa.Id });
             }
+
+            ViewBag.AnimalId = doa.AnimalFK;
             return View(doa);
         }
+
 
         /// <summary>
         /// Apresenta o formulário de edição de uma doação.

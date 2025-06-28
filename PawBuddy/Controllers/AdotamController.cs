@@ -40,6 +40,16 @@ namespace PawBuddy.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
         
+        public async Task<IActionResult> IndexPartial()
+        {
+            var listaAdotam = await _context.Adotam
+                .Include(a => a.Utilizador)
+                .Include(a => a.Animal)
+                .ToListAsync();
+
+            return PartialView("_IndexPartial", listaAdotam);
+        }
+
         /// <summary>
         /// Mostra os detalhes de uma adoção específica.
         /// </summary>

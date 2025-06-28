@@ -30,31 +30,13 @@ namespace PawBuddy.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> IndexPartial(string searchNome, string especie, string genero)
-        {
-            var animais = _context.Animal.AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchNome))
-                animais = animais.Where(a => a.Nome.Contains(searchNome));
-
-            if (!string.IsNullOrEmpty(especie))
-                animais = animais.Where(a => a.Especie == especie);
-
-            if (!string.IsNullOrEmpty(genero))
-                animais = animais.Where(a => a.Genero == genero);
-
-            var listaAnimais = await animais.ToListAsync();
-
-            return PartialView("_IndexPartial", listaAnimais);
-        }
-
         /// <summary>
         /// Lista todos os animais cadastrados.
         /// </summary>
         /// <returns>Vista com a lista de animais.</returns>
         // GET: Animais
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string searchNome, string especie, string genero, int page = 1, int pageSize = 9)
+        public async Task<IActionResult> Index(string searchNome, string especie, string genero, int page = 1, int pageSize = 6)
         {
             var animais = _context.Animal.AsQueryable();
 
@@ -84,7 +66,23 @@ namespace PawBuddy.Controllers
             return View(animaisPaginados);
         }
 
+        public async Task<IActionResult> IndexPartial(string searchNome, string especie, string genero)
+        {
+            var animais = _context.Animal.AsQueryable();
 
+            if (!string.IsNullOrEmpty(searchNome))
+                animais = animais.Where(a => a.Nome.Contains(searchNome));
+
+            if (!string.IsNullOrEmpty(especie))
+                animais = animais.Where(a => a.Especie == especie);
+
+            if (!string.IsNullOrEmpty(genero))
+                animais = animais.Where(a => a.Genero == genero);
+
+            var listaAnimais = await animais.ToListAsync();
+
+            return PartialView("_IndexPartial", listaAnimais);
+        }
 
         
         /// <summary>

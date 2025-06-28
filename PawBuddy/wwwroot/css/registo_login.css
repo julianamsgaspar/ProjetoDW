@@ -55,3 +55,21 @@ input.form-control:focus {
         font-size: 0.9rem; /* Texto ligeiramente mais pequeno */
     }
 }
+/* Estilo para link com aparência de botão */
+.btn-link-style {
+    display: inline-block;
+    background-color: #aba4eb; /* Roxo suave */
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-link-style:hover {
+    background-color: #8d58a6; /* Roxo mais escuro */
+    transform: scale(1.05);
+    color: white;
+}

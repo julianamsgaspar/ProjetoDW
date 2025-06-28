@@ -164,7 +164,14 @@ namespace PawBuddy.Controllers
                
                _context.Add(intencaoDeAdocao);
                await _context.SaveChangesAsync();
-               return RedirectToAction(nameof(Index));
+               if (User.IsInRole("Admin"))
+               {
+                   return RedirectToAction(nameof(Index));
+               }
+               else
+               {
+                   return RedirectToAction("Index", "Animais");
+               }
            }
           // ViewData["AnimalFK"] = new SelectList(_context.Animal, "Id", "Nome", intencaoDeAdocao.AnimalFK);
            //ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "Id", "Nome", intencaoDeAdocao.UtilizadorFK);

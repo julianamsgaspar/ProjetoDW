@@ -1,36 +1,48 @@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
 @model PawBuddy.Models.Doa
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nova Doação";
 }
 
-<h1>Criar</h1>
+<div class="container mt-5">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-body">
+            <h2 class="card-title mb-4 text-center text-primary">Fazer uma Doação</h2>
+            <h5 class="text-muted text-center mb-4">Ajude-nos a cuidar dos nossos animais</h5>
 
-<h4>Doar</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        @{
-            var animalId = ViewBag.AnimalId;
-        }
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="PrecoAux" class="control-label"></label>
-                <input asp-for="PrecoAux" class="form-control"/>
-                <span asp-validation-for="PrecoAux" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="UtilizadorFK"/>
-            <input type="hidden" asp-for="AnimalFK" value="@ViewBag.AnimalId"/>
+            @{
+                var animalId = ViewBag.AnimalId;
+            }
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary"/>
+            <form asp-action="Create" asp-route-id="@animalId" method="post">
+
+            <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="PrecoAux" class="form-label fw-semibold">Valor da Doação (€)</label>
+                    <input asp-for="PrecoAux" class="form-control" placeholder="Introduza o valor" />
+                    <span asp-validation-for="PrecoAux" class="text-danger small"></span>
+                </div>
+
+                <input type="hidden" asp-for="UtilizadorFK" />
+                <input type="hidden" asp-for="AnimalFK" value="@animalId" />
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-heart-fill me-2"></i>Doar Agora
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <a asp-action="Index" asp-controller="Animais" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Voltar
+                </a>
             </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Voltar</a>
-</div>
-

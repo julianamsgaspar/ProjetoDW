@@ -87,11 +87,20 @@
                     
                     <input type="hidden" asp-for="UtilizadorFK"/>
                     <input type="hidden" asp-for="AnimalFK" value="@animal?.Id"/>
-                    
+
                     <div class="form-group mt-4">
-                        <input type="submit" value="Enviar Intenção de Adoção" class="btn btn-primary"/>
-                        <a asp-action="Index" asp-controller="Animais" asp-route-id="@animal?.Id" class="btn btn-secondary">Voltar</a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <input type="submit" value="Enviar Intenção de Adoção" class="btn btn-primary" />
+                            <a asp-action="Index" asp-controller="Administrador" class="btn btn-secondary">Voltar ao Painel</a>
+                        }
+                        else
+                        {
+                            <input type="submit" value="Enviar Intenção de Adoção" class="btn btn-primary" />
+                            <a asp-action="Index" asp-controller="Animais" asp-route-id="@animal?.Id" class="btn btn-secondary">Voltar</a>
+                        }
                     </div>
+
                 </div>
             </div>
         </form>

@@ -70,7 +70,9 @@
     <form asp-action="Delete" method="post" id="deleteForm">
         <input type="hidden" asp-for="Id" />
         <button type="button" class="btn btn-danger" onclick="confirmDelete()">Confirmar Eliminação</button> |
-        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+        <div>
+            <a asp-action="Index" asp-controller="Administrador">Voltar ao Painel</a>
+        </div>
     </form>
 </div>
 
